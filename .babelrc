@@ -1,0 +1,23 @@
+{
+  "presets": [
+    [
+      "env", {
+        "targets": {
+          "browsers": ["> 5%", "last 2 versions"]
+        },
+        "modules": false
+      }
+    ],
+    "stage-0",
+    "react"
+  ],
+  "env": {
+    "test": {
+      "presets": [["env"], "react"]
+    }
+  },
+  "plugins": [
+    "syntax-dynamic-import",
+    "transform-runtime"
+  ]
+}

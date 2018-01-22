@@ -2,12 +2,12 @@ import ClassNames from 'classnames'
 import $ from 'jquery'
 import React from 'react'
 import { getCapital } from '../_util'
-interface T {
+export interface T {
   title: string
   key: number | ''
   capital?: string[]
 }
-interface MyProps {
+export interface MyProps {
   data: any[]
   className?: string
   style?: React.CSSProperties
@@ -18,7 +18,7 @@ interface MyProps {
   title?: string
 }
 
-interface MyStates {
+export interface MyStates {
   visible: boolean
   data: T[]
   dataTmp: T[]

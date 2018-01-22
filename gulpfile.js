@@ -55,24 +55,34 @@ gulp.task('autoprefix', function () {
 })
 
 // 编译ts
-gulp.task('ts', function () {
+gulp.task('ts', function (cb) {
   var ts = require('gulp-typescript')
-  var tsProject = ts.createProject('tsconfig.json', { noImplicitAny: true })
+  var tsProject = ts.createProject('tsconfig.json')
   gulp.src('components/**/*.tsx')
     .pipe(tsProject())
-    .pipe(babel())
     .pipe(gulp.dest('lib'))
+    .on('end', cb)
+})
+gulp.task('copy', function (cb) {
+  gulp.src(['components/**/*.d.ts', 'components/**/*.js'])
+    .pipe(gulp.dest('lib'))
+    .on('end', cb)
 })
 
 // 编译js
-gulp.task('js', function () {
-  gulp.src('components/**/*.js')
+gulp.task('js', function (cb) {
+  gulp.src(['lib/**/*.js', 'lib/**/*.jsx'])
     .pipe(babel())
     .pipe(gulp.dest('lib'))
+    .on('end', cb)
+})
+// 删除jsx
+gulp.task('cleanjsx', function () {
+  rimraf.sync('lib/**/*.jsx')
 })
 
 gulp.task('css', ['stylus', 'autoprefix'])
 gulp.task('lib', function (cb) {
   rimraf.sync('lib')
-  gulpSequence(['js', 'ts'], cb)
+  gulpSequence('ts', 'copy', 'js', 'cleanjsx', cb)
 })

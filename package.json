@@ -5,8 +5,8 @@
   "main": "lib/index.js",
   "scripts": {
     "dev": "node scripts/server",
-    "dist": "node_modules/gulp/bin/gulp.js dist",
-    "lib": "node_modules/gulp/bin/gulp.js lib"
+    "dist": "./node_modules/gulp/bin/gulp.js dist",
+    "lib": "node ./node_modules/gulp/bin/gulp.js lib"
   },
   "files": [
     "dist",

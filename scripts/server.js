@@ -20,5 +20,5 @@ app.use(devMiddleware(compiler, {
 app.use(hotMiddleware(compiler))
 
 app.listen(3000, function () {
-  console.log('app listening on port 3001!\n')
+  console.log('app listening on port 3000!\n')
 })

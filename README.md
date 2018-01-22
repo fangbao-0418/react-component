@@ -1,7 +1,14 @@
-### 安装
+### Install
+```
+npm i pilipa2 --save
+```
+
+### Development
 ```
 npm i tyarn -g
 tyarn install
-```
-### 组件开发服务
 npm run dev
+...
+npm run lib
+npm run dist
+```

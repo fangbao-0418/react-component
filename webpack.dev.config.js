@@ -4,9 +4,9 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin')
 const extractCommon = new ExtractTextPlugin({
   filename: '[name][contenthash].css',
   allChunks: true
-});
+})
 module.exports = {
-  entry: './src/index',
+  entry: './dev/index',
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'pilipa.bundle.js'
@@ -16,7 +16,7 @@ module.exports = {
       {
         enforce: 'pre',
         test: /\.js$/,
-        exclude: /node_modules/,
+        include: [path.resolve(__dirname, 'components'), path.resolve(__dirname, 'dev')],
         use: [
           'source-map-loader',
           'eslint-loader'
@@ -24,14 +24,33 @@ module.exports = {
       },
       {
         test: /\.(js|jsx)$/,
-        exclude: /node_modules/,
+        include: [path.resolve(__dirname, 'components'), path.resolve(__dirname, 'dev')],
         use: [
           'babel-loader'
         ]
       },
       {
+        enforce: 'pre',
+        test: /\.tsx$/,
+        include: [path.resolve(__dirname, 'components'), path.resolve(__dirname, 'dev')],
+        use: [
+          'tslint-loader'
+        ]
+      },
+      {
+        test: /\.(ts|tsx)$/,
+        include: [path.resolve(__dirname, 'components'), path.resolve(__dirname, 'dev')],
+        use: [
+          {
+            loader: 'babel-loader'
+          },
+          {
+            loader: 'awesome-typescript-loader'
+          }
+        ]
+      },
+      {
         test: /\.css$/,
-        exclude: /node_modules/,
         use: extractCommon.extract({
           fallback: 'style-loader',
           use: [
@@ -49,7 +68,6 @@ module.exports = {
             {
               loader: 'css-loader',
               options: {
-                modules: true,
                 localIdentName: '[local]-[hash:base64:5]',
                 sourceMap: true
               }
@@ -83,14 +101,17 @@ module.exports = {
           name: '[name].[hash:7].[ext]'
         }
       }
-    ],
+    ]
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './index.html',
+      template: './dev/index.html',
       inject: 'true',
       favicon: null
     }),
     extractCommon
-  ]
+  ],
+  resolve: {
+    extensions: ['.tsx', '.ts', '.jsx', '.js', '.min.js', '.styl', '.css']
+  }
 }

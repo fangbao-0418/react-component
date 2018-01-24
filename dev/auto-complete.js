@@ -1,8 +1,7 @@
 import React from 'react'
-import * as pilipa from 'pilipa2'
 
-// import { AutoComplete } from '../components'
-import { AutoComplete } from '../lib'
+// import { AutoComplete } from '../index'
+import { AutoComplete } from '../index'
 export default class extends React.Component {
   constructor () {
     super()

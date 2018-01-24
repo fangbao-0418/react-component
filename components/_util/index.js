@@ -1,2 +1,6 @@
-export { default as getCapital } from './getCapital'
-export { default as exportToExcel } from './exportToExcel'
+import getCapital from './getCapital'
+import exportToExcel from './exportToExcel'
+export {
+  getCapital,
+  exportToExcel
+}

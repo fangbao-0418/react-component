@@ -1,8 +1,6 @@
 import React from 'react'
-import * as pilipa from 'pilipa2'
 
-import { AutoComplete } from '../components'
-const { DropDown } = pilipa
+import { AutoComplete, DropDown } from '../index'
 
 export default class extends React.Component {
   constructor () {
@@ -19,13 +17,20 @@ export default class extends React.Component {
     return (
       <div>
         <DropDown
+          style={{float: 'left', marginRight: '20px'}}
           data={this.data}
           callBack={(item) => {
             console.log(item)
           }}
+          filter
         />
-        <AutoComplete
+        <DropDown
+          style={{float: 'left'}}
           data={this.data}
+          callBack={(item) => {
+            console.log(item)
+          }}
+          filter
         />
       </div>
     )

@@ -1,4 +1,5 @@
 var path = require('path')
+var webpack = require('webpack')
 var HtmlWebpackPlugin = require('html-webpack-plugin')
 var ExtractTextPlugin = require('extract-text-webpack-plugin')
 const extractCommon = new ExtractTextPlugin({
@@ -6,10 +7,13 @@ const extractCommon = new ExtractTextPlugin({
   allChunks: true
 })
 module.exports = {
-  entry: './dev/index',
+  entry: [
+    'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000&reload=true',
+    './dev/index'
+  ],
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'pilipa.bundle.js'
+    filename: '[name].bundle.js'
   },
   module: {
     rules: [
@@ -109,6 +113,7 @@ module.exports = {
       inject: 'true',
       favicon: null
     }),
+    new webpack.HotModuleReplacementPlugin(),
     extractCommon
   ],
   resolve: {

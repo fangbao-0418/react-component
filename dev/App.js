@@ -1,8 +1,4 @@
 import React from 'react'
-
-const context = require.context('../components', true, /\.styl$/)
-context.keys().forEach(context)
-
 const location = window.location.href
 let hash
 let Component
@@ -12,7 +8,7 @@ try {
 } catch (e) {
   console.log('home page')
 }
-console.log(Component, 'component')
+
 export default class App extends React.Component {
   mapDemo () {
     const demo = ['dropdown', 'auto-complete']

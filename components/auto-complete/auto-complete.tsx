@@ -2,12 +2,12 @@ import classNames from 'classnames'
 import $ from 'jquery'
 import React from 'react'
 import { getCapital } from '../_util'
-interface T {
+export interface T {
   title: string
   key: number | ''
   capital?: string[]
 }
-interface MyProps {
+export interface MyProps {
   data: any[]
   onSelect?: (value: string) => any
   className?: string
@@ -15,7 +15,7 @@ interface MyProps {
   style?: React.CSSProperties
   setFields?: {key: string, title: string}
 }
-interface MyStates {
+export interface MyStates {
   data: T[]
   dataTmp: T[]
   page: number
@@ -60,7 +60,7 @@ class AutoComplete extends React.Component<MyProps, MyStates> {
       const newItem: T = {
         key: item[key || 'key'],
         title: item[title || 'title'],
-        capital: getCapital(item[title || 'title']) || ['']
+        capital: getCapital<string>(item[title || 'title']) || ['']
       }
       this.allData[index] = newItem
     })

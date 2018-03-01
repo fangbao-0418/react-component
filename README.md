@@ -17,6 +17,6 @@ npm run dist
 ```
 npm config set registry http://npmregistry.i-counting.cn
 yarn add pilipa || npm install pilipa
-或者
+or
 yarn add pilipa --registry http://npmregistry.i-counting.cn
 ```

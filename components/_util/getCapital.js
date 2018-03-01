@@ -37,6 +37,13 @@ function mkRslt (arr) {
   return arrRslt
 }
 export default function (str) {
+  var refer = {
+    '佛': 'f',
+    '长春': 'cc'
+  }
+  for (const k in refer) {
+    str = str.replace(k, refer[k].toUpperCase())
+  }
   if (typeof (str) !== 'string') {
     throw new Error(-1, '函数getCaptial需要字符串类型参数!')
   }

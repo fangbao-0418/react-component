@@ -1,5 +1,5 @@
 import React from 'react'
-import Voucher from '../components/voucher'
+import Voucher from '../lib/voucher'
 
 const data = [{
   SubjectAbstract: '2-15应收商品收入（普票）,税率：3.00%',

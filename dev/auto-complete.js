@@ -5,13 +5,13 @@ import { AutoComplete } from '../index'
 export default class extends React.Component {
   constructor () {
     super()
-    this.data = [{
-      key: 1,
-      title: '爱康鼎科技有限公司'
-    }, {
-      key: 2,
-      title: '噼里啪智能财税'
-    }]
+    this.data = []
+    for (var i = 0; i <= 100; i++) {
+      this.data.push({
+        key: i,
+        title: `测试数据${i}`
+      })
+    }
   }
   render () {
     return (

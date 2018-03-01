@@ -89,7 +89,8 @@ class AutoComplete extends React.Component<MyProps, MyStates> {
     this.setState({
       data: res.slice(0, this.pageNum),
       dataTmp: res,
-      visible: true
+      visible: true,
+      page: 1
     }, () => {
       this.listenScroll()
       const results = this.refs.results

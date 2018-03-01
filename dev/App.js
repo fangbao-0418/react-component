@@ -11,7 +11,7 @@ try {
 
 export default class App extends React.Component {
   mapDemo () {
-    const demo = ['dropdown', 'auto-complete']
+    const demo = ['dropdown', 'auto-complete', 'voucher']
     const node = []
     demo.map((item, index) => {
       node.push(
@@ -47,6 +47,7 @@ export default class App extends React.Component {
             >
               返回列表
             </h3>
+            <hr />
             <Component />
           </div>
         }

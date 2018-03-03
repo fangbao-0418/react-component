@@ -10,7 +10,9 @@ module.exports = {
   entry: './index',
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'pilipa.min.js'
+    filename: 'pilipa.min.js',
+    library: 'pilipa',
+    libraryTarget: 'window'
   },
   module: {
     rules: [

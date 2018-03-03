@@ -1,1 +1,92 @@
 pilipa-prefix = pilipa
+
+.{pilipa-prefix}-btn
+  padding: 5px 12px
+  border-radius: 4px
+  font-size: 14px
+  outline: 0
+  display: inline-block
+  background-color: #fff
+  border: 1px solid #ccc
+  cursor: pointer
+  user-select: none
+.{pilipa-prefix}-btn-default
+  &:hover
+    color: #333;
+    background-color: #e6e6e6
+    border-color: #adadad
+  &:active
+    color: #333;
+    background-color: #d4d4d4;
+    border-color: #8c8c8c;
+.{pilipa-prefix}-btn-warning
+  color: #FFFFFF
+  background-color: #f0ad4e;
+  border-color: #eea236;
+  &:hover
+    background-color: #ec971f;
+    border-color: #d58512;
+  &:active
+    color: #fff;
+    background-color: #d58512;
+    border-color: #985f0d;
+
+@keyframes pilipaFadeIn
+  0%
+    opacity: 0
+  100%
+    opacity: 1;
+@keyframes pilipaFadeOut
+  0%
+    opacity: 1
+  100%
+    opacity: 0
+.pilipa-fade-enter
+  animation-name: pilipaFadeIn
+.pilipa-fade-leave
+  animation-name: pilipaFadeOut
+.pilipa-fade-enter, .pilipa-fade-leave
+  animation-timing-function: linear
+  animation-duration: 0.2s;
+  animation-fill-mode: both;
+  animation-play-state: paused;
+.pilipa-fade-enter.pilipa-fade-active
+  animation-name: pilipaFadeIn
+  animation-play-state: running
+.pilipa-fade-leave.pilipa-fade-active
+  animation-name: pilipaFadeOut
+  animation-play-state: running
+
+@keyframes pilipaZoomIn
+  0%
+    opacity: 0;
+    top: 0
+    // transform: scale(0.2);
+  100%
+    opacity: 1;
+    top: 100px
+    // transform: scale(1);
+@keyframes pilipaZoomOut
+  0%
+    transform: scale(1);
+    top: 100px
+  100%
+    opacity: 0
+    top: 0
+    // transform: scale(0.2);
+
+.pilipa-zoom-enter
+  animation-name: pilipaZoomIn
+.pilipa-zoom-leave
+  animation-name: pilipaZoomOut
+.pilipa-zoom-enter, .pilipa-zoom-leave
+  animation-timing-function: linear
+  animation-duration: 0.2s;
+  animation-fill-mode: both
+  animation-play-state: paused
+.pilipa-zoom-enter.pilipa-zoom-active
+  animation-name: pilipaZoomIn
+  animation-play-state: running
+.pilipa-zoom-leave.pilipa-zoom-active
+  animation-name: pilipaZoomOut
+  animation-play-state: running

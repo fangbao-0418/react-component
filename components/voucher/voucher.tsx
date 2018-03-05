@@ -118,12 +118,12 @@ class Voucher extends React.Component<MyProps, MyStates> {
       items
     })
   }
-  public convertMoney (str: string) {
-    if (!str) {
-      return ''
+  public convertMoney (num: number) {
+    if (!num) {
+      num = 0
     }
     const node: JSX.Element[] = []
-    let money = (Math.round(parseFloat(str)) * 100).toString()
+    let money = (Math.round(Math.abs(num)) * 100).toString()
     const maxNum = Math.pow(10, 11)
     if (parseFloat(money) > maxNum) {
       money = (maxNum - 1).toString()
@@ -132,6 +132,7 @@ class Voucher extends React.Component<MyProps, MyStates> {
     arr.map((item, index) => {
       node.push(
         <span
+          style={{color: num < 0 ? 'red' : null}}
           key={this.defaultCls + '-money-' + index}
         >
           {item}
@@ -139,10 +140,25 @@ class Voucher extends React.Component<MyProps, MyStates> {
     })
     return <div className='money-unit'>{node}</div>
   }
+  public getTotal (): {debitMoney: number, creditMoney: number} {
+    const { fieldCfg } = this.props
+    const { items } = this.state
+    let debitMoney = 0
+    let creditMoney = 0
+    items.map((item: any) => {
+      debitMoney += item[fieldCfg.debitMoney]
+      creditMoney += item[fieldCfg.creditMoney]
+    })
+    return {
+      debitMoney,
+      creditMoney
+    }
+  }
   public render () {
     const {
       className, style, companyName, date, voucherNo, treasurer, reviewer, originator, isShowTaxRate
     } = this.props
+    const total = this.getTotal()
     return (
       <div ref='voucher' className={ClassNames(this.defaultCls, className)} style={style}>
         <div className={this.defaultCls + '-header'}>
@@ -183,8 +199,8 @@ class Voucher extends React.Component<MyProps, MyStates> {
               <td colSpan={!isShowTaxRate ? 2 : 3}>
                 合计：
               </td>
-              <td></td>
-              <td></td>
+              <td>{this.convertMoney(total.debitMoney)}</td>
+              <td>{this.convertMoney(total.creditMoney)}</td>
             </tr>
           </tbody>
         </table>

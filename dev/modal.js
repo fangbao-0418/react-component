@@ -1,10 +1,9 @@
 import React from 'react'
 import { findDOMNode } from 'react-dom'
-import modal from '../lib/modal'
+import modal from '../components/modal'
 import $ from 'jquery'
 class Content extends React.Component {
   toClick () {
-    console.log(this)
     alert('xxx')
   }
   render () {

@@ -1,12 +1,19 @@
 import React from 'react'
-import Voucher from '../lib/voucher'
+import Voucher from '../components/voucher'
 
 const data = [{
   SubjectAbstract: '2-15应收商品收入（普票）,税率：3.00%',
   SubjectName: '预付账款_待摊费用',
-  DebitMoney: '111111111236.00',
-  CreditorMoney: '0.00',
-  TaxRate: '3.00'
+  DebitMoney: 111236.00,
+  CreditorMoney: 0.00,
+  TaxRate: 3.00
+},
+{
+  SubjectAbstract: '2-15应收商品收入（普票）,税率：3.00%',
+  SubjectName: '预付账款_待摊费用',
+  DebitMoney: -1111236.00,
+  CreditorMoney: 0.00,
+  TaxRate: 3.00
 }]
 export default class extends React.Component {
   constructor () {

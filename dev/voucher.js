@@ -46,6 +46,7 @@ export default class extends React.Component {
           reviewer='xxx'
           originator='xxx'
           items={data}
+          // editable={false}
           isShowTaxRate={this.state.isShowTaxRate}
           fieldCfg={{
             abstract: 'SubjectAbstract',

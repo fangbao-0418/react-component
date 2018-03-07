@@ -11,6 +11,7 @@ export interface MyProps {
   treasurer: string
   reviewer: string
   originator: string
+  editable?: boolean
   fieldCfg?: {
     abstract: string
     subjectName: string
@@ -34,6 +35,9 @@ class Voucher extends React.Component<MyProps, MyStates> {
     this.initOperate()
   }
   public setTrHover () {
+    if (this.props.editable === false) {
+      return
+    }
     const el = $(this.refs.voucher)
     el.find('table tbody tr').hover((event) => {
       $(event.currentTarget).find('.fa').css({opacity: 1})
@@ -62,6 +66,9 @@ class Voucher extends React.Component<MyProps, MyStates> {
     this.setTdClick()
   }
   public setTdClick () {
+    if (this.props.editable === false) {
+      return
+    }
     const el = $(this.refs.voucher)
     el.find('table tbody tr td').unbind('click').click((event) => {
       const index = $(event.currentTarget).parent().index()
@@ -110,6 +117,9 @@ class Voucher extends React.Component<MyProps, MyStates> {
     return node
   }
   public onTaxRateChange (index: number, event: SyntheticEvent<{value: number}>) {
+    if (this.props.editable === false) {
+      return
+    }
     const value = event.currentTarget.value
     const { items } = this.state
     const { fieldCfg } = this.props

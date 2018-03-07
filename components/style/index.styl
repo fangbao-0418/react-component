@@ -90,3 +90,35 @@ pilipa-prefix = pilipa
 .pilipa-zoom-leave.pilipa-zoom-active
   animation-name: pilipaZoomOut
   animation-play-state: running
+
+@keyframes NotificationFadeIn
+  0%
+    opacity: 0;
+    right: -384px
+  100%
+    opacity: 1;
+    right: 0
+@keyframes NotificationFadeOut
+  0%
+    opacity: 1;
+    margin-bottom: 16px;
+    padding-top: 16px 24px;
+    padding-bottom: 16px 24px;
+    max-height: 150px;
+  100%
+    opacity: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    max-height: 0;
+.pilipa-notification-fade-enter,.pilipa-notification-fade-leave
+  animation-duration: 0.24s;
+  animation-fill-mode: both;
+  animation-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
+  animation-play-state: paused;
+.pilipa-notification-fade-enter.pilipa-notification-fade-active
+  animation-play-state: running
+  animation-name: NotificationFadeIn
+.pilipa-notification-fade-leave.pilipa-notification-fade-active
+  animation-play-state: running
+  animation-name: NotificationFadeOut

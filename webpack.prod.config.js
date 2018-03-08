@@ -12,7 +12,7 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     filename: 'pilipa.min.js',
     library: 'pilipa',
-    libraryTarget: 'window'
+    libraryTarget: 'umd'
   },
   module: {
     rules: [
@@ -117,7 +117,7 @@ module.exports = {
       sourceMap: true
     }),
     new webpack.NoEmitOnErrorsPlugin(),
-    new webpack.IgnorePlugin(/(jquery|font-awesome)/)
+    new webpack.IgnorePlugin(/(font-awesome)/)
   ],
   resolve: {
     extensions: ['.tsx', '.ts', '.jsx', '.js', '.min.js', '.styl', '.css']

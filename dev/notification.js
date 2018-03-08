@@ -1,8 +1,8 @@
 import React from 'react'
 import notification from '../components/notification'
-notification.config({
-  duration: 100000
-})
+// notification.config({
+//   duration: 000
+// })
 export default class extends React.Component {
   toClick (type) {
     notification[type]({

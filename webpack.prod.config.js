@@ -116,7 +116,8 @@ module.exports = {
       },
       sourceMap: true
     }),
-    new webpack.NoEmitOnErrorsPlugin()
+    new webpack.NoEmitOnErrorsPlugin(),
+    new webpack.IgnorePlugin(/(jquery|font-awesome)/)
   ],
   resolve: {
     extensions: ['.tsx', '.ts', '.jsx', '.js', '.min.js', '.styl', '.css']

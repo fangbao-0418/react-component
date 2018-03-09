@@ -10,10 +10,11 @@ export default {
   },
   show () {
     this.$el.html(this.template)
-    if ($('body').find(this.$el).length === 0) {
-      $('body').append(this.$el)
-      $('.pilipa-loading-content').lettering()
+    if ($('body').find(this.$el).length > 0) {
+      this.$el.remove()
     }
+    $('body').append(this.$el)
+    $('.pilipa-loading-content').lettering()
   },
   template () {
     return `

@@ -4,7 +4,7 @@ import '../_util'
 export default {
   $el: $('<div class="pilipa-loading"></div>'),
   hide () {
-    $('.pilipa-loading-loading').fadeOut(10, () => {
+    $('.pilipa-loading-content').fadeOut(10, () => {
       this.$el.remove()
     })
   },
@@ -12,13 +12,13 @@ export default {
     this.$el.html(this.template)
     if ($('body').find(this.$el).length === 0) {
       $('body').append(this.$el)
+      $('.pilipa-loading-content').lettering()
     }
-    $('.pilipa-loading-loading').lettering()
   },
   template () {
     return `
       <div class="pilipa-loading-mask">
-        <h1 class="pilipa-loading-loading">loading...</h1>
+        <h1 class="pilipa-loading-content">loading...</h1>
       </div>
     `
   }

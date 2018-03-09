@@ -3667,6 +3667,10 @@ isstream@~0.1.2:
   version "0.1.2"
   resolved "http://registry.npm.taobao.org/isstream/download/isstream-0.1.2.tgz#47e63f7af55afa6f92e1500e690eb8b8529c099a"
 
+"jquery@>= 1.6.2":
+  version "3.3.1"
+  resolved "http://npmregistry.i-counting.cn/jquery/-/jquery-3.3.1.tgz#958ce29e81c9790f31be7792df5d4d95fc57fbca"
+
 jquery@^3.2.1:
   version "3.2.1"
   resolved "http://registry.npm.taobao.org/jquery/download/jquery-3.2.1.tgz#5c4d9de652af6cd0a770154a631bba12b015c787"
@@ -3890,6 +3894,12 @@ lead@^1.0.0:
   resolved "http://registry.npm.taobao.org/lead/download/lead-1.0.0.tgz#6f14f99a37be3a9dd784f5495690e5903466ee42"
   dependencies:
     flush-write-stream "^1.0.2"
+
+lettering.js@^0.8.2:
+  version "0.8.2"
+  resolved "http://npmregistry.i-counting.cn/lettering.js/-/lettering.js-0.8.2.tgz#65b0c9609e2975fb2d72a179a9775bfc1c38c13a"
+  dependencies:
+    jquery ">= 1.6.2"
 
 levn@^0.3.0, levn@~0.3.0:
   version "0.3.0"

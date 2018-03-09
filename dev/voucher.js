@@ -23,18 +23,24 @@ export default class extends React.Component {
     }
   }
   onTdClick () {
-    // console.log(arguments)
-    this.setState({
-      isShowTaxRate: true
-    })
+    console.log(arguments)
+    // this.setState({
+    //   isShowTaxRate: true
+    // })
   }
   toSave () {
     console.log(this.refs.voucher.state.items)
   }
+  toShowTax () {
+    this.setState({
+      isShowTaxRate: !this.state.isShowTaxRate
+    })
+  }
   render () {
     return (
-      <div style={{width: '800px', margin: '100px auto 0px'}}>
+      <div style={{margin: '100px auto 0px'}}>
         <div style={{textAlign: 'right'}}>
+          <button onClick={this.toShowTax.bind(this)}>显示税率</button>
           <button onClick={this.toSave.bind(this)}>保存</button>
         </div>
         <Voucher
@@ -46,7 +52,7 @@ export default class extends React.Component {
           reviewer='xxx'
           originator='xxx'
           items={data}
-          // editable={false}
+          editable={false}
           isShowTaxRate={this.state.isShowTaxRate}
           fieldCfg={{
             abstract: 'SubjectAbstract',

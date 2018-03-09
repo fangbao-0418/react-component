@@ -36,10 +36,11 @@ export default class extends React.Component {
     this.modal2 = new modal({
       title: 'xxx',
       mask: false
+
     })
     this.modal3 = new modal({
       title: 'xxx',
-      // mask: false,
+      mask: false,
       className: 'abc cde',
       style: {width: '200px'}
     })

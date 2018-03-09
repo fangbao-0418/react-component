@@ -60,7 +60,7 @@ gulp.task('ts', function (cb) {
   var tsProject = ts.createProject('tsconfig.json', {
     declaration: true,
   })
-  gulp.src('components/**/*.tsx')
+  gulp.src('components/**/*.ts?(x)')
     .pipe(tsProject())
     .pipe(gulp.dest('lib'))
     .on('end', cb)

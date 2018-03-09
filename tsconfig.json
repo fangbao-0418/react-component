@@ -13,6 +13,6 @@
     ]
   },
   "include": [
-    "components/**/*.tsx"
+    "components"
   ]
 }

@@ -11,7 +11,7 @@ try {
 
 export default class App extends React.Component {
   mapDemo () {
-    const demo = ['dropdown', 'auto-complete', 'voucher', 'modal', 'notification', 'loading']
+    const demo = ['dropdown', 'auto-complete', 'voucher', 'modal', 'notification', 'loading', 'cookie']
     const node = []
     demo.map((item, index) => {
       node.push(

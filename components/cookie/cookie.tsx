@@ -1,8 +1,8 @@
 export default {
-  setCookie (name: string, time: number) {
+  setCookie (obj: {name: string, value?: any, time?: number, path?: string}) {
     const date: any = new Date()
-    date.setTime(date.getTime() + 24 * 60 * 60 * 1000 * time)
-    document.cookie = name + '=1;expires=' + date.toGMTString()
+    date.setTime(date.getTime() + 24 * 60 * 60 * 1000 * (obj.time || 1))
+    document.cookie = obj.name + '='+ (obj.value || 1) +';expires=' + date.toGMTString() + ';path=' + (obj.path || '/')
   },
   getCookie (name: string) {
     if (name) {
@@ -15,6 +15,11 @@ export default {
       return false
     } else {
       return document.cookie
+    }
+  },
+  removeCookie (names: [string]) {
+    for (const name of names) {
+      this.setCookie({name, time: -1})
     }
   }
 }

@@ -28,7 +28,7 @@ export default {
     date.setTime(date.getTime() - 24 * 60 * 60 * 1000)
     for (const name of names) {
       const val = this.get(name)
-      document.cookie = `${name}=${val}; expires=${date}`
+      document.cookie = `${name}=${val}; expires=${date.toGMTString()}`
     }
   }
 }

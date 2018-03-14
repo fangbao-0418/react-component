@@ -2,8 +2,10 @@ import React from 'react'
 import cookie from '../components/cookie'
 export default class extends React.Component {
   toClick (type) {
-    cookie[type]({name: 'hh1', time: 1, path: '/'})
-    const status = cookie.getCookie()
+    const date = new Date()
+    date.setTime(date.getTime() + 24 * 60 * 60 * 1000 * 1)
+    cookie[type]({hh1: 'hh1', hh2: 'hh2'}, {path: '/', expires: date})
+    const status = cookie.get()
     alert(status)
   }
   toClick2 (type) {
@@ -11,7 +13,7 @@ export default class extends React.Component {
     alert(a)
   }
   toClick3 (type) {
-    const status = cookie.removeCookie(['hh1', 'hh2'])
+    const status = cookie.remove(['hh1', 'hh2'])
     alert(status)
   }
   render () {
@@ -20,21 +22,21 @@ export default class extends React.Component {
         <button
           style={{marginRight: '10px'}}
           className="pilipa-btn pilipa-btn-warning"
-          onClick={this.toClick.bind(this, 'setCookie')}
+          onClick={this.toClick.bind(this, 'set')}
         >
           setCookie
         </button>
         <button
           style={{marginRight: '10px'}}
           className="pilipa-btn pilipa-btn-warning"
-          onClick={this.toClick2.bind(this, 'getCookie')}
+          onClick={this.toClick2.bind(this, 'get')}
         >
           getCookie
         </button>
         <button
           style={{marginRight: '10px'}}
           className="pilipa-btn pilipa-btn-warning"
-          onClick={this.toClick3.bind(this, 'removeCookie')}
+          onClick={this.toClick3.bind(this, 'removew')}
         >
           removeCookie
         </button>

@@ -1,10 +1,16 @@
 export default {
-  setCookie (obj: {name: string, value?: any, time?: number, path?: string}) {
-    const date: any = new Date()
-    date.setTime(date.getTime() + 24 * 60 * 60 * 1000 * (obj.time || 1))
-    document.cookie = obj.name + '='+ (obj.value || 1) +';expires=' + date.toGMTString() + ';path=' + (obj.path || '/')
+  set (obj: object | any, options: {path?: string, expires?: Date, domain?: string, secure?: 0 | 1}) {
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        document.cookie = `${key}=${obj[key]}
+        ;expires=${options.expires}
+        ;path=${options.path || '/'}
+        ${(options.domain  === undefined ? (';domain=' + options.domain) : '')}
+        ${(options.secure === undefined ? (';secure=0' + options.secure) : '')}`
+      }
+    }
   },
-  getCookie (name: string) {
+  get (name: string) {
     if (name) {
       const cookie = document.cookie.split(';')
       for (const i of cookie) {
@@ -17,9 +23,11 @@ export default {
       return document.cookie
     }
   },
-  removeCookie (names: [string]) {
+  remove (names: [string]) {
+    const date: any = new Date()
+    date.setTime(date.getTime() + 24 * 60 * 60 * 1000 * -1)
     for (const name of names) {
-      this.setCookie({name, time: -1})
+      document.cookie = name + '=' + name + ';expires=' + date
     }
   }
 }

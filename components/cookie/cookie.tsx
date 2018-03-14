@@ -3,31 +3,32 @@ export default {
     for (const key in obj) {
       if (obj.hasOwnProperty(key)) {
         document.cookie = `${key}=${obj[key]}
-        ;expires=${options.expires}
-        ;path=${options.path || '/'}
-        ${(options.domain  === undefined ? (';domain=' + options.domain) : '')}
-        ${(options.secure === undefined ? (';secure=0' + options.secure) : '')}`
+        ${options.expires !== undefined ? ('; expires=' + options.expires) : ''}
+        ; path=${options.path || '/'}
+        ${(options.domain  !== undefined ? ('; domain=' + options.domain) : '')}
+        ${(options.secure !== undefined ? ('; secure=0' + options.secure) : '')}`
       }
     }
   },
   get (name: string) {
     if (name) {
-      const cookie = document.cookie.split(';')
+      const cookie = document.cookie.split('; ')
       for (const i of cookie) {
-        if (i.indexOf(name) > -1) {
-          return true
+        if (i.indexOf(name) === 0) {
+          return i.substring(name.length + 1, i.length)
         }
       }
-      return false
+      return null
     } else {
-      return document.cookie
+      return 'name is not empty'
     }
   },
   remove (names: [string]) {
     const date: any = new Date()
-    date.setTime(date.getTime() + 24 * 60 * 60 * 1000 * -1)
+    date.setTime(date.getTime() - 24 * 60 * 60 * 1000)
     for (const name of names) {
-      document.cookie = name + '=' + name + ';expires=' + date
+      const val = this.get(name)
+      document.cookie = `${name}=${val}; expires=${date}`
     }
   }
 }

@@ -9,7 +9,7 @@ export default class extends React.Component {
     for (var i = 0; i <= 100; i++) {
       this.data.push({
         key: i,
-        title: `测试数据${i}`
+        title: `测试数据测试数据测试数据测试数据测试数据测试数据${i}`
       })
     }
   }

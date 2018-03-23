@@ -170,6 +170,7 @@ class AutoComplete extends React.Component<MyProps, MyStates> {
                       <li
                         onClick={this.handleSelect.bind(this, item)}
                         key={'auto-complete-' + index}
+                        title={item.title}
                       >
                         {item.title}
                       </li>

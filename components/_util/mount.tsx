@@ -12,14 +12,15 @@ function mounted () {
 }
 function destroy () {
 }
+const allowComponents = ['SearchView']
 export default function <P> (conf: {component: string, props: P,  el: any}) {
   const { component, props } = conf
   let { el } = conf
-  if (component) {
-
+  if (allowComponents.indexOf(component) === -1) {
+    throw new Error('the component does not exist')
   }
   const Component = Components[component]
-  if (el instanceof $) {
+  if (el.__proto__.jquery) {
     el = el[0]
   }
   const promise = new Promise((resolve: any, reject: any) => {

@@ -28,17 +28,17 @@ export default class extends React.Component {
     }
   }
   componentDidMount () {
+    const el = $('<div>123</div>')
     this.searchView = mount({
       component: 'SearchView',
       props: {
         title: this.state.title,
-        content: <Test />
+        content: el
       },
       el: $('#search')
     })
   }
   toClick () {
-    console.log(this, 'this')
     this.searchView.then(ins => {
       ins.trigger('panel-up')
     })

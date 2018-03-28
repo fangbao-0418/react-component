@@ -21,7 +21,7 @@ class SearchView extends React.Component<Props, {}> {
     }
   }
   public componentDidMount () {
-    if (this.props.content && (typeof this.props.content === 'string' || this.props.content instanceof $)) {
+    if (this.props.content && (typeof this.props.content === 'string' || this.props.content.__proto__.jquery)) {
       $(this.refs.panel).find('.pilipa-search-view-panel-body').html(this.props.content)
     }
     this.on('panel-up', () => {

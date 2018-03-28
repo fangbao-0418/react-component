@@ -133,7 +133,8 @@ class Voucher extends React.Component<MyProps, MyStates> {
       num = 0
     }
     const node: JSX.Element[] = []
-    let money = (Math.round(Math.abs(num)) * 100).toString()
+    let money = (Math.round(Math.abs(num) * 100)).toString()
+    console.log(money)
     const maxNum = Math.pow(10, 11)
     if (parseFloat(money) > maxNum) {
       money = (maxNum - 1).toString()

@@ -1,5 +1,5 @@
 import React from 'react'
-import loading from '../lib/loading'
+import loading from '../components/loading'
 export default class extends React.Component {
   toClick (type) {
     loading.show()

@@ -1,47 +1,55 @@
 import classNames from 'classnames'
 import $ from 'jquery'
 import React from 'react'
+import event from '../decorations/event'
 export interface Props {
+  title?: string
   content?: any
+  init?: any
+  mounted?: any
+  destroy?: any
 }
-
-function decoration (): any {
-  console.log(arguments, 'decoration')
-  return (target: any, b: any, c: any) => {
-    console.log(target)
-    target.trigger = (eventName: string) => {
-
-    }
-    target.on = (eventName: string, cb: any) => {
-      cb()
-    }
-  }
-}
-
-@decoration()
+@event()
 class SearchView extends React.Component<Props, {}> {
   public trigger: any
   public on: any
+  public off: any
+  constructor (props: Props) {
+    super(props)
+    if (this.props.init) {
+      this.props.init.call(this, this)
+    }
+  }
   public componentDidMount () {
     if (this.props.content && (typeof this.props.content === 'string' || this.props.content instanceof $)) {
       $(this.refs.panel).find('.pilipa-search-view-panel-body').html(this.props.content)
     }
-    this.on('xxx', () => {
-      console.log('xxx')
+    this.on('panel-up', () => {
+      $(this.refs.panel).slideUp(30)
     })
+    this.on('panel-down', () => {
+      $(this.refs.panel).slideDown(30)
+    })
+    if (this.props.mounted) {
+      this.props.mounted.call(this, this)
+    }
   }
-
+  public componentWillUnmount () {
+    if (this.props.destroy) {
+      this.props.destroy.call(this, this)
+    }
+  }
   public toClick () {
-    $(this.refs.panel).slideToggle(30)
+    $(this.refs.panel).slideDown(30)
   }
   public toRefresh () {
-    console.log(this)
+    this.trigger('refresh')
   }
   public render () {
     console.log(this.props.content instanceof $, 'render')
     return (
       <div className={classNames('pilipa-search-view')}>
-        <div className='pilipa-search-view-input' onClick={this.toClick.bind(this)}>xxx</div>
+        <div className='pilipa-search-view-input' onClick={this.toClick.bind(this)}>{this.props.title}</div>
         <div className='pilipa-search-view-refresh' onClick={this.toRefresh.bind(this)}>
           <i className='fa fa-refresh' aria-hidden='true'></i>
         </div>

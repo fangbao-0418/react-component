@@ -44,14 +44,27 @@ module.exports = {
       {
         test: /\.(ts|tsx)$/,
         include: [path.resolve(__dirname, 'components'), path.resolve(__dirname, 'dev')],
-        use: [
-          {
-            loader: 'babel-loader'
-          },
-          {
-            loader: 'awesome-typescript-loader'
+        loader: 'awesome-typescript-loader',
+        options: {
+          useCache: true,
+          useBabel: true,
+          babelOptions: {
+            babelrc: false, /* Important line */
+            presets: [
+              [
+                'env',
+                {
+                  'targets': {
+                    'browsers': ['> 5%', 'last 2 versions']
+                  },
+                  'modules': false
+                }
+              ],
+              'stage-0',
+              'react'
+            ]
           }
-        ]
+        }
       },
       {
         test: /\.css$/,

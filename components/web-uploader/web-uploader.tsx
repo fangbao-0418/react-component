@@ -1,8 +1,10 @@
+import { Wrapper as OSS } from 'ali-oss'
 import classNames from 'classnames'
 import $ from 'jquery'
 import React from 'react'
 import bus from '../events'
 import Item from './item'
+
 interface ProgressEvent {
   target: {
     result: string
@@ -15,13 +17,25 @@ export interface States {
   initShow: boolean
   imgs: string[]
 }
+ // tslint:disable-next-line:quotemark max-line-length
+let ossCfg: any = JSON.parse("{\"status\":true,\"errorcode\":\"\",\"message\":\"\",\"data\":\"{\\\"AccessKeyId\\\":\\\"STS.CYMhMo1so6SrTmhqrm7hZtkg2\\\",\\\"AccessKeySecret\\\":\\\"4yQ6DV4oaMviE2RTrudcozG8RWPmcr9gLuSTzQCr6PwX\\\",\\\"SecurityToken\\\":\\\"CAISvAJ1q6Ft5B2yfSjIopr4I\/fb3KxOgZGZVkvZlXI4O+d2m67M0Dz2IHlNfHVsBeEbtPQznWFZ7\/gflr90UIQAXU3AbNN5q5pK9QfkaoHKtteutTeYEgFqXTr9MQXy+eOPSfabJYqvZJXAQlTAkTAJjtmeXD6+XlujHISUgJp8FLo+VRW5ajw0Y7UzIRB5+vcHKVzbN\/umLmTG4AzqAVFvpxB3hE5m9K272bf80BfFi0DgweJn5+a\/K5O\/Pc53J8U9AZXnxO1yd7LIl3UPtl8Vrfsry\/YcoGeC5orYWABzm0zdbrWFqYM2c1AiOfJjR\/F+waKixaEiiIv6jJ\/qzhtBB+ZRXhnESZqoqMm+Q7rwboplKeemYSSRi4Heb8eoqX0jemleLAJOesIob3FtDRhpQzrRJ7S86MsV4dRZwnTvGoABesiNCKjPgjFvJ\/um+kJqcTXy462gnIQQffduFkqtU7eiRmguj\/cuCOMLEaa15DlQ3jCdywc4VrvmX9NVijiQzxIXlMbmjVscNbdW7pSZauZNlFK7uk0FfOYV0WNXnyCj+eP8RtS77GfSLACFNfFW6nlVmAQIYQoT0zXen0UgujA=\\\",\\\"bucketName\\\":\\\"pilipa\\\",\\\"dir\\\":\\\"pilipa\/375\/7145\/2018-03-31\\\"}\"}")
+ossCfg = JSON.parse(ossCfg.data)
 class WebUploader extends React.Component <Props, States> {
   public files: File[] = []
+  public store = OSS({
+    accessKeyId: ossCfg.AccessKeyId,
+    accessKeySecret: ossCfg.AccessKeySecret,
+    // tslint:disable-next-line:quotemark max-line-length
+    stsToken: ossCfg.SecurityToken,
+    bucket: 'pilipa',
+    region: 'oss-cn-beijing'
+  })
   public state = {
     initShow: false,
     imgs: ['']
   }
   public componentWillMount () {
+    console.log(this.store, 'store')
     bus.on('rotate-left', this.handleImageOperate)
   }
   public componentDidMount () {
@@ -130,7 +144,22 @@ class WebUploader extends React.Component <Props, States> {
   public handleImageOperate () {
     console.log('ratote')
   }
+  public * asyncOssFileUpload () {
+    // pilipa/132/7019/2017-11-30
+    const result: any = []
+    for (const item of this.files) {
+      const res = yield this.store.multipartUpload<{}, any>(`/${ossCfg.dir}/oss-test.png`, item)
+      console.log(res, 'res')
+      // res.then((r: any) => {
+      //   console.log(r, 'r')
+      // })
+      result.push(res)
+    }
+    return result
+  }
   public startUpload () {
+    const result = this.asyncOssFileUpload()
+    console.log(result.next(), 'result')
     bus.trigger('upload')
   }
   public render () {
@@ -164,7 +193,12 @@ class WebUploader extends React.Component <Props, States> {
             <div className='pilipa-web-uploader-operate'>
               <div className='pilipa-web-uploader-operate'>
                 <div className='pilipa-web-uploader-btn-default mr-10'>继续上传</div>
-                <div className='pilipa-web-uploader-btn-primary' onClick={this.startUpload.bind(this)}>开始上传</div>
+                <div
+                  className='pilipa-web-uploader-btn-primary'
+                  onClick={this.startUpload.bind(this)}
+                >
+                  开始上传
+                </div>
               </div>
             </div>
           </div>

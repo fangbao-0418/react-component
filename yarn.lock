@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@types/ali-oss@http://npmregistry.i-counting.cn/@types%2fali-oss/-/ali-oss-1.0.0.tgz":
+"@types/ali-oss@^1.0.0":
   version "1.0.0"
-  resolved "http://npmregistry.i-counting.cn/@types%2fali-oss/-/ali-oss-1.0.0.tgz#5e84bc50293565428880344ffd73b8368dc1fa3b"
+  resolved "http://npmregistry.i-counting.cn/@types%2fali-oss/-/ali-oss-1.0.0.tgz#e2ae1df3cc13073b196f16034bbe2841de10496d"
 
 "@types/classnames@^2.2.3":
   version "2.2.3"

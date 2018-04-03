@@ -1,17 +1,162 @@
+import { CheckPoint, Client, Wrapper as OSS } from 'ali-oss'
+import classNames from 'classnames'
 import $ from 'jquery'
 import React from 'react'
-import bus from '../events'
-export interface Props {
-  item: string
+import modal from '../modal'
+import bus from './bus'
+interface Props {
+  file: File
   index: number
   removeImg?: (index: number) => void
+  accept?: string
+  accessKeyId: string
+  accessKeySecret: string
+  stsToken: string
+  bucket: string
+  region: string
+  dir: string
 }
-export default class extends React.Component <Props, {}> {
+interface States {
+  src: string
+  percentage: number
+  uploadStatus: string
+  uploading: boolean
+}
+interface ClientPromise {
+  then: (cb: (res: any) => void) => this
+  catch: (cb: (e: any) => void) => this
+  finally: (cb: (res: any, e: any) => void) => this
+}
+type UploadStatus = 'start' | 'pause' | 'continue'
+export default class extends React.Component <Props, States> {
   public deg = 0
-  public componentWillMount () {
-    console.log(bus, this)
+  public state = {
+    src: '',
+    percentage: 0,
+    uploadStatus: 'unknow',
+    uploading: false
   }
-  public handleOpearte (type: string) {
+  public tempCheckpoint: CheckPoint = null
+  public store: Client
+  public componentWillMount () {
+    this.readFile()
+    const { accessKeyId, accessKeySecret, stsToken, bucket, region } = this.props
+    this.store = OSS({
+      accessKeyId,
+      accessKeySecret,
+      stsToken,
+      bucket,
+      region
+    })
+    bus.on<UploadStatus>('start-upload', (status) => {
+      this.initStatus(() => {
+        this.startUpload(status)
+      })
+    })
+  }
+  public componentDidMount () {
+    const $el = $(this.refs.item)
+    $el.hover(() => {
+      if ($el.find('.pilipa-web-uploader-imgage-uploading').length > 0) {
+        if (this.state.uploadStatus === 'pause') {
+
+        }
+        $el.find('.pilipa-web-uploader-image-operate').hide()
+      }
+    })
+  }
+  public initStatus (cb?: () => void) {
+    if (this.state.uploadStatus === 'success') {
+      return
+    }
+    this.setState({
+      uploadStatus: 'unknow'
+    }, () => {
+      if (cb) {
+        cb()
+      }
+    })
+  }
+  public readFile () {
+    const reader: FileReader = new FileReader()
+    reader.readAsDataURL(this.props.file)
+    reader.onload = (e: any) => {
+      this.setState({
+        src: e.target.result
+      })
+    }
+  }
+  public fileUpload () {
+    this.store.multipartUpload<{
+      progress: (percentage: number, checkpoint: CheckPoint) => void,
+      checkpoint?: CheckPoint
+    }, ClientPromise>(`/${this.props.dir}/oss-test.dmg`, this.props.file, {
+      progress: async (percentage, checkpoint) => {
+        this.setState({
+          percentage
+        })
+        bus.trigger<{index: number, percentage: number}>('percentage', {
+          index: this.props.index,
+          percentage
+        })
+        this.tempCheckpoint = checkpoint
+      },
+      checkpoint: this.tempCheckpoint
+    }).then((res) => {
+      this.setState({
+        uploadStatus: 'success'
+      })
+      bus.trigger('end-upload', {
+        index: this.props.index,
+        status: 'success'
+      })
+    }).catch((err) => {
+      if (typeof err === 'object' && err.name === 'cancel') {
+        this.setState({
+          uploadStatus: 'pause'
+        })
+      } else {
+        this.setState({
+          uploadStatus: 'failed'
+        })
+        bus.trigger('end-upload', {
+          index: this.props.index,
+          status: 'failed'
+        })
+      }
+    }).finally(() => {
+      this.setState({
+        uploading: false
+      })
+    })
+  }
+  public startUpload (status: UploadStatus) {
+    if (this.state.uploadStatus === 'success') {
+      return
+    }
+    switch (status) {
+    case 'start':
+      this.setState({
+        uploading: true
+      })
+      this.fileUpload()
+      break
+    case 'pause':
+      this.setState({
+        uploadStatus: 'pause',
+        uploading: false
+      })
+      this.store.cancel()
+      break
+    case 'continue':
+      this.setState({
+        uploading: true
+      })
+      this.fileUpload()
+      break
+    }
+  }
+  public handleOpearte (type: 'rotate-left' | 'rotate-right' | 'zoom-in' | 'delete') {
     const $img = $(this.refs.img)
     switch (type) {
     case 'rotate-left':
@@ -26,29 +171,83 @@ export default class extends React.Component <Props, {}> {
         transform: `rotate(${this.deg}deg)`
       })
       break
+    case 'zoom-in':
+      let zoomIn = false
+      const m = new modal({
+        header: null,
+        footer: null,
+        className: 'pilipa-web-uploader-show-images',
+        content: (
+          <div className='pilipa-webuploader-images'>
+            <img
+              onDoubleClick={() => {
+                zoomIn = !zoomIn
+                $('.pilipa-webuploader-images').css({
+                  transform: zoomIn ? 'scale(1.1)' : 'scale(1)'
+                })
+              }}
+              src={this.state.src}
+              style={{maxWidth: '1200px', borderRadius: '4px'}}
+            />
+          </div>
+        )
+      })
+      m.show()
+      break
     case 'delete':
       this.props.removeImg(this.props.index)
       break
     }
   }
   public render () {
-    const { item, index } = this.props
     return (
-      <li>
-        {/* <div className='web-uploader-imgage-mask'></div> */}
-        {/* <div className='web-uploader-imgage-loading'>
-          <i className='fa fa-spinner fa-pulse fa-spin fa-3x fa-fw' aria-hidden='true'></i>
-        </div> */}
-        {/* <div className='web-uploader-image-upload-status failed'>
-          上传失败
-        </div> */}
+      <li ref='item'>
+        {
+          // 上传进度
+          this.state.uploading &&
+          <div className='pilipa-web-uploader-imgage-uploading'>
+            <div className='pilipa-web-uploader-ring'></div>
+            <span>{Math.round(this.state.percentage * 100)}%</span>
+          </div>
+        }
+        {
+          // 暂停
+          this.state.uploadStatus === 'pause' &&
+          <div className='pilipa-web-uploader-imgage-uploading'>
+            <div className='pilipa-web-uploader-pause'>
+              <i className='fa fa-pause-circle-o' aria-hidden='true'></i>
+            </div>
+          </div>
+        }
+        {
+          // 失败 || 成功
+          ['success', 'failed'].indexOf(this.state.uploadStatus) > -1 &&
+          <div
+            className={
+              classNames([
+                'pilipa-web-uploader-image-upload-status',
+                {
+                  success: this.state.uploadStatus === 'success',
+                  failed: this.state.uploadStatus === 'failed'
+                }
+              ])
+            }
+          >
+            {this.state.uploadStatus === 'success' ? '上传成功' : '上传失败'}
+          </div>
+        }
         <div className='pilipa-web-uploader-image-operate'>
           <i className='fa fa-undo' aria-hidden='true' onClick={this.handleOpearte.bind(this, 'rotate-left')}></i>
           <i className='fa fa-repeat' aria-hidden='true' onClick={this.handleOpearte.bind(this, 'rotate-right')}></i>
-          <i className='fa fa-search-plus' aria-hidden='true'></i>
+          <i
+            className='fa fa-search-plus'
+            aria-hidden='true'
+            onClick={this.handleOpearte.bind(this, 'zoom-in')}
+          >
+          </i>
           <i className='fa fa-trash-o' aria-hidden='true' onClick={this.handleOpearte.bind(this, 'delete')}></i>
         </div>
-        <img src={item} ref='img'/>
+        <img src={this.state.src} ref='img'/>
       </li>
     )
   }

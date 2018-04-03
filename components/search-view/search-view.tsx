@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import $ from 'jquery'
 import React from 'react'
-import event from '../decorations/event'
+import event from '../decorations/events'
 export interface Props {
   title?: string
   content?: any

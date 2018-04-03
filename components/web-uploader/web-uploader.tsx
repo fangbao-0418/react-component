@@ -1,45 +1,57 @@
-import { Wrapper as OSS } from 'ali-oss'
 import classNames from 'classnames'
 import $ from 'jquery'
 import React from 'react'
-import bus from '../events'
+import events from '../decorations/events'
+import modal from '../modal'
+import bus from './bus'
 import Item from './item'
-
 interface ProgressEvent {
   target: {
     result: string
   }
 }
-export interface Props {
+interface Props {
   accept?: string
+  accessKeyId: string
+  accessKeySecret: string
+  stsToken: string
+  bucket: string
+  region: string
+  dir: string
 }
-export interface States {
+interface States {
   initShow: boolean
-  imgs: string[]
+  files: File[]
+  uploadStatus: string
+  percentage: number
+  successNo: number
+  failedNo: number
 }
- // tslint:disable-next-line:quotemark max-line-length
-let ossCfg: any = JSON.parse("{\"status\":true,\"errorcode\":\"\",\"message\":\"\",\"data\":\"{\\\"AccessKeyId\\\":\\\"STS.CYMhMo1so6SrTmhqrm7hZtkg2\\\",\\\"AccessKeySecret\\\":\\\"4yQ6DV4oaMviE2RTrudcozG8RWPmcr9gLuSTzQCr6PwX\\\",\\\"SecurityToken\\\":\\\"CAISvAJ1q6Ft5B2yfSjIopr4I\/fb3KxOgZGZVkvZlXI4O+d2m67M0Dz2IHlNfHVsBeEbtPQznWFZ7\/gflr90UIQAXU3AbNN5q5pK9QfkaoHKtteutTeYEgFqXTr9MQXy+eOPSfabJYqvZJXAQlTAkTAJjtmeXD6+XlujHISUgJp8FLo+VRW5ajw0Y7UzIRB5+vcHKVzbN\/umLmTG4AzqAVFvpxB3hE5m9K272bf80BfFi0DgweJn5+a\/K5O\/Pc53J8U9AZXnxO1yd7LIl3UPtl8Vrfsry\/YcoGeC5orYWABzm0zdbrWFqYM2c1AiOfJjR\/F+waKixaEiiIv6jJ\/qzhtBB+ZRXhnESZqoqMm+Q7rwboplKeemYSSRi4Heb8eoqX0jemleLAJOesIob3FtDRhpQzrRJ7S86MsV4dRZwnTvGoABesiNCKjPgjFvJ\/um+kJqcTXy462gnIQQffduFkqtU7eiRmguj\/cuCOMLEaa15DlQ3jCdywc4VrvmX9NVijiQzxIXlMbmjVscNbdW7pSZauZNlFK7uk0FfOYV0WNXnyCj+eP8RtS77GfSLACFNfFW6nlVmAQIYQoT0zXen0UgujA=\\\",\\\"bucketName\\\":\\\"pilipa\\\",\\\"dir\\\":\\\"pilipa\/375\/7145\/2018-03-31\\\"}\"}")
-ossCfg = JSON.parse(ossCfg.data)
+type UploadStatus = 'start' | 'pause' | 'continue'
+@events()
 class WebUploader extends React.Component <Props, States> {
+  public on: <T>(event: string, cb: (payload: T) => void) => void
+  public trigger: <T>(event: string, payload: T) => void
+  public off: (event: string) => void
   public files: File[] = []
-  public store = OSS({
-    accessKeyId: ossCfg.AccessKeyId,
-    accessKeySecret: ossCfg.AccessKeySecret,
-    // tslint:disable-next-line:quotemark max-line-length
-    stsToken: ossCfg.SecurityToken,
-    bucket: 'pilipa',
-    region: 'oss-cn-beijing'
-  })
+  public percentages: number[] = [0]
+  public uploadedInfo: Array<'success' | 'failed'> = []
+  public m: any
   public state = {
-    initShow: false,
-    imgs: ['']
+    initShow: this.files.length === 0,
+    files: this.files,
+    uploadStatus: 'start',
+    percentage: 0,
+    successNo: 0,
+    failedNo: 0
   }
   public componentWillMount () {
-    console.log(this.store, 'store')
-    bus.on('rotate-left', this.handleImageOperate)
+    bus.on('end-upload', this.onEndUpload.bind(this))
+    bus.on('percentage', this.onPercentage.bind(this))
   }
   public componentDidMount () {
     this.handleDrop()
+    this.showSuccessModal()
   }
   public handleDrop () {
     const $dropArea = $(this.refs['drop-area'])
@@ -69,8 +81,22 @@ class WebUploader extends React.Component <Props, States> {
       for (const item of event.dataTransfer.files) {
         this.files.push(item)
       }
-      console.log(this.files)
-      this.createPreview()
+      this.filterRepeatFile()
+      this.setState({
+        files: this.files,
+        initShow: this.files.length === 0
+      })
+    })
+  }
+  public filterRepeatFile () {
+    // 过滤重复文件
+    const temp: any = {}
+    this.files.map((item, index) => {
+      if (temp[item.name] && temp[item.name].size === item.size && temp[item.name].type === item.type) {
+        this.files.splice(index, 1)
+      } else {
+        temp[item.name] = item
+      }
     })
   }
   public createPreview () {
@@ -78,32 +104,12 @@ class WebUploader extends React.Component <Props, States> {
       this.setState({
         initShow: false
       })
-      this.asyncReadImages()
     }
-  }
-  public async asyncReadImages () {
-    const imgs: any[] = []
-    for (const item of this.files) {
-      imgs.push(await this.readImage(item))
-    }
-    this.setState({
-      imgs
-    })
-  }
-  public readImage (file: File) {
-    const reader: FileReader = new FileReader()
-    reader.readAsDataURL(file)
-    const p = new Promise((resolve, reject) => {
-      reader.onload = (e: any) => {
-        resolve(e.target.result)
-      }
-    })
-    return p
   }
   public initShowView () {
     return (
       <div className='pilipa-web-uploader-constructor'>
-        <div className='pilipa-web-uploader-btn'>
+        <div className='pilipa-web-uploader-btn' onClick={this.toAddFile.bind(this)}>
           点击选择票据
         </div>
         <p className=''>
@@ -113,26 +119,35 @@ class WebUploader extends React.Component <Props, States> {
     )
   }
   public removeImage (index: number) {
-    const imgs = this.state.imgs
-    imgs.splice(index, 1)
+    console.log(index, 'index')
+    console.log(this.files)
     this.files.splice(index, 1)
+    this.uploadedInfo.splice(index, 1)
+    this.percentages.splice(index, 1)
     this.setState({
-      imgs
+      files: this.files,
+      initShow: this.files.length === 0
     })
-    console.log(this.files.length)
   }
   public imageListView () {
     return (
       <div className='pilipa-web-uploader-images'>
         <ul>
           {
-            this.state.imgs.map((item, index) => {
+            this.state.files.map((file, index) => {
               return (
                 <Item
-                  key={`pilipa-web-uploader-image-${index}`}
+                  key={`pilipa-web-uploader-image-${file.name}-${index}`}
+                  accessKeyId={this.props.accessKeyId}
+                  accessKeySecret={this.props.accessKeySecret}
+                  stsToken={this.props.stsToken}
+                  bucket={this.props.bucket}
+                  region={this.props.region}
+                  dir={this.props.dir}
+                  accept={this.props.accept}
                   index={index}
-                  removeImg={this.removeImage.bind(this)}
-                  item={item}
+                  file={file}
+                  removeImg={this.removeImage.bind(this, index)}
                 />
               )
             })
@@ -141,26 +156,104 @@ class WebUploader extends React.Component <Props, States> {
       </div>
     )
   }
-  public handleImageOperate () {
-    console.log('ratote')
-  }
-  public * asyncOssFileUpload () {
-    // pilipa/132/7019/2017-11-30
-    const result: any = []
-    for (const item of this.files) {
-      const res = yield this.store.multipartUpload<{}, any>(`/${ossCfg.dir}/oss-test.png`, item)
-      console.log(res, 'res')
-      // res.then((r: any) => {
-      //   console.log(r, 'r')
-      // })
-      result.push(res)
-    }
-    return result
-  }
   public startUpload () {
-    const result = this.asyncOssFileUpload()
-    console.log(result.next(), 'result')
-    bus.trigger('upload')
+    bus.trigger('start-upload', this.state.uploadStatus)
+    switch (this.state.uploadStatus) {
+    case 'start':
+      status = 'pause'
+      break
+    case 'pause':
+      status = 'continue'
+      break
+    case 'continue':
+      status = 'pause'
+      break
+    }
+    this.setState({
+      uploadStatus: status
+    })
+  }
+  public onPercentage (item: {index: number, percentage: number}) {
+    let sum = 0
+    this.percentages[item.index] = item.percentage
+    console.log(item, this.percentages, 'percentage')
+    this.percentages.map((v) => {
+      sum += v
+    })
+    this.setState({
+      percentage: Math.round((sum / this.files.length) * 100)
+    })
+  }
+  public onEndUpload (item: {index: number, status: 'success' | 'failed'}) {
+    this.uploadedInfo[item.index] = item.status
+    let successNo = 0
+    this.uploadedInfo.map((v) => {
+      if(v === 'success') {
+        successNo += 1
+      }
+    })
+    const failedNo = this.uploadedInfo.length - successNo
+    this.setState({
+      successNo,
+      failedNo
+    })
+    if (this.uploadedInfo.length === this.files.length) {
+      this.setState({
+        uploadStatus: 'start'
+      })
+    }
+    if (successNo === this.files.length) {
+      this.showSuccessModal()
+    }
+  }
+  public showSuccessModal () {
+    this.m = new modal({
+      header: null,
+      footer: null,
+      mask: false,
+      maskClosable: false,
+      className: 'pilipa-web-uploader-success-modal',
+      content: (
+        <div className='pilipa-web-uploader-success-modal-content'>
+          <p>
+          本次票据上传成功！<br />
+          您上传的票据已完成，共1张（2.78K），成功上传1张!
+          </p>
+          <div className='pilipa-web-uploader-success-modal-footer'>
+            <div onClick={this.uploadSuccess.bind(this)}>上传成功</div>
+            <div onClick={this.continueUpload.bind(this)}>继续上传</div>
+          </div>
+        </div>
+      )
+    })
+    this.m.show()
+  }
+  public uploadSuccess () {
+    console.log(this.m)
+    this.m.hide()
+    this.trigger('upload-success', null)
+  }
+  public continueUpload () {
+    console.log('continue upload')
+  }
+  public toAddFile () {
+    const file: any = $(this.refs.file)
+    file.attr('multiple', 'multiple')
+    file.off('change').on('change', () => {
+      console.log(this.files)
+      const files = file[0].files
+      for (const item of files) {
+        if (item) {
+          this.files.push(item)
+        }
+      }
+      this.filterRepeatFile()
+      this.setState({
+        files: this.files,
+        initShow: this.files.length === 0
+      })
+    })
+    file.trigger('click')
   }
   public render () {
     return (
@@ -186,23 +279,44 @@ class WebUploader extends React.Component <Props, States> {
               this.state.initShow ? this.initShowView() : this.imageListView()
             }
           </div>
-          <div className='pilipa-web-uploader-footer'>
+        </div>
+        <div className='pilipa-web-uploader-footer'>
             <div className='pilipa-web-uploader-info'>
-              选中98张票据，共6.02M
+              {/* 选中98张票据，共6.02M */}
+              {
+                // ['pause', 'continue'].indexOf(this.state.uploadStatus) &&
+                <div className='pilipa-web-uploader-percentage'>
+                  <span>{this.state.percentage}%</span>
+                  <div
+                    className='pilipa-web-uploader-percentage-solid'
+                    style={{width: `${this.state.percentage}%`}}
+                  >
+                  </div>
+                </div>
+              }
+              <p>
+                &nbsp;&nbsp;成功：<span style={{color: '#52c41a'}}>{this.state.successNo}</span>&nbsp;&nbsp;
+                失败：<span style={{color: '#cf1322'}}>{this.state.failedNo}</span>
+              </p>
             </div>
             <div className='pilipa-web-uploader-operate'>
               <div className='pilipa-web-uploader-operate'>
-                <div className='pilipa-web-uploader-btn-default mr-10'>继续上传</div>
+                <div
+                  onClick={this.toAddFile.bind(this)}
+                  className='pilipa-web-uploader-btn-default mr-10'
+                >
+                  继续添加
+                  <input type='file' ref='file' style={{display: 'none'}} />
+                </div>
                 <div
                   className='pilipa-web-uploader-btn-primary'
                   onClick={this.startUpload.bind(this)}
                 >
-                  开始上传
+                  {['开始', '暂停', '继续'][['start', 'pause', 'continue'].indexOf(this.state.uploadStatus)]}上传
                 </div>
               </div>
             </div>
           </div>
-        </div>
       </div>
     )
   }

@@ -1,5 +1,5 @@
-import event from '../decorations/event'
-@event()
+import events from '../decorations/events'
+@events()
 class Events {
   public on: any
   public trigger: any

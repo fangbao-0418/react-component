@@ -3,6 +3,7 @@ import $ from 'jquery'
 import React from 'react'
 import events from '../decorations/events'
 import modal from '../modal'
+import notification from '../notification'
 import bus from './bus'
 import Item from './item'
 interface ProgressEvent {
@@ -88,16 +89,32 @@ class WebUploader extends React.Component <Props, States> {
       })
     })
   }
+  // 过滤文件
   public filterRepeatFile () {
-    // 过滤重复文件
+    const accept = this.props.accept || 'jpeg,png,gif'
+    const allowTypes = ('image/' + accept.replace(/[,|]/g, ',image/')).split(',')
     const temp: any = {}
+    const files: File[] = []
     this.files.map((item, index) => {
-      if (temp[item.name] && temp[item.name].size === item.size && temp[item.name].type === item.type) {
-        this.files.splice(index, 1)
+      // 过滤重复文件
+      if (
+          temp[item.name] && temp[item.name].size === item.size
+          && temp[item.name].type === item.type
+          // && temp[item.name].lastModified === item.lastModified
+      ) {
       } else {
         temp[item.name] = item
+        // 过滤不允许的文件类型
+        if (allowTypes.indexOf(item.type) > -1) {
+          files.push(item)
+        } else {
+          notification.warning({
+            message: `${item.name} 文件已被忽略掉！`
+          })
+        }
       }
     })
+    this.files = files
   }
   public createPreview () {
     if (this.files.length) {
@@ -113,21 +130,20 @@ class WebUploader extends React.Component <Props, States> {
           点击选择票据
         </div>
         <p className=''>
-          或将票据拖到这里，单次最多可选300张
+          或将票据拖到这里，单次最多可选300张，仅支持jpg、png、gif类型的文件
         </p>
       </div>
     )
   }
   public removeImage (index: number) {
-    console.log(index, 'index')
-    console.log(this.files)
     this.files.splice(index, 1)
     this.uploadedInfo.splice(index, 1)
     this.percentages.splice(index, 1)
     this.setState({
-      files: this.files,
+      files: Object.assign([], this.files),
       initShow: this.files.length === 0
     })
+    console.log(this.files, this.state.files)
   }
   public imageListView () {
     return (
@@ -137,7 +153,7 @@ class WebUploader extends React.Component <Props, States> {
             this.state.files.map((file, index) => {
               return (
                 <Item
-                  key={`pilipa-web-uploader-image-${file.name}-${index}`}
+                  key={`pilipa-web-uploader-image-${file.name}-${file.size}`}
                   accessKeyId={this.props.accessKeyId}
                   accessKeySecret={this.props.accessKeySecret}
                   stsToken={this.props.stsToken}

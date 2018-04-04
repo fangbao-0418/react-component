@@ -247,7 +247,7 @@ export default class extends React.Component <Props, States> {
           </i>
           <i className='fa fa-trash-o' aria-hidden='true' onClick={this.handleOpearte.bind(this, 'delete')}></i>
         </div>
-        <img src={this.state.src} ref='img'/>
+        <img src={this.state.src} ref='img' alt={this.props.file.name}/>
       </li>
     )
   }

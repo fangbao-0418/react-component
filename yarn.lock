@@ -4,7 +4,7 @@
 
 "@types/ali-oss@^1.0.0":
   version "1.0.0"
-  resolved "http://npmregistry.i-counting.cn/@types%2fali-oss/-/ali-oss-1.0.0.tgz#e2ae1df3cc13073b196f16034bbe2841de10496d"
+  resolved "http://npmregistry.i-counting.cn/@types%2fali-oss/-/ali-oss-1.0.0.tgz#8c956fcab6da2270d3295177998daf2627ea4c20"
 
 "@types/classnames@^2.2.3":
   version "2.2.3"

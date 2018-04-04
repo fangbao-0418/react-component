@@ -14,6 +14,8 @@ function webUploader (opts: Options) {
   const m = new modal({
     header: null,
     footer: null,
+    mask: false,
+    maskClosable: false,
     content: (
       <WebUploader
         accessKeyId={opts.accessKeyId}

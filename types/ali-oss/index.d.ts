@@ -21,9 +21,11 @@ declare module 'ali-oss' {
   }
   export interface Client {
     multipartUpload: <T, S>(name: string, file: string | File, options?: T) => S
-    cancel: () => void
+    cancel: <T>() => T
+    abortMultipartUpload: <T>(name: string, uploadId: string) => T
+    delete: <T>(name: string) => T
+    deleteMulti: (names: string[]) => void
   }
   export function Wrapper (config: OSSConfig): Client
-  function client (config: OSSConfig): Client
-  export default client
+  export default function client (config: OSSConfig): Client
 }

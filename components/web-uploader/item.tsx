@@ -2,6 +2,7 @@ import { CheckPoint, Client, Wrapper as OSS } from 'ali-oss'
 import classNames from 'classnames'
 import $ from 'jquery'
 import React from 'react'
+import { md5 } from '../_util'
 import modal from '../modal'
 import bus from './bus'
 interface Props {
@@ -38,6 +39,8 @@ export default class extends React.Component <Props, States> {
   }
   public tempCheckpoint: CheckPoint = null
   public store: Client
+  public name = ''
+  public uploadId = ''
   public componentWillMount () {
     this.readFile()
     const { accessKeyId, accessKeySecret, stsToken, bucket, region } = this.props
@@ -53,6 +56,8 @@ export default class extends React.Component <Props, States> {
         this.startUpload(status)
       })
     })
+    bus.on('remove', this.removeFile.bind(this))
+    this.createFileName()
   }
   public componentDidMount () {
     const $el = $(this.refs.item)
@@ -64,6 +69,25 @@ export default class extends React.Component <Props, States> {
         $el.find('.pilipa-web-uploader-image-operate').hide()
       }
     })
+  }
+  public componentWillUnmount () {
+    console.log('will unmount')
+  }
+  public createFileName () {
+    const pattern = 'ABCDEFGHIJKLMNOPQRESUVWXYZabcdefghijklmnopqresuvwxyz1234567890'
+    let i = 0
+    let random
+    let str = ''
+    const suffix = this.props.file.type.replace('image/', '').replace('jpeg', 'jpg')
+    while (i < 10) {
+      random = Math.floor(Math.random()*62)
+      str += pattern.charAt(random)
+      i++
+    }
+    const nowTime = new Date().getTime().toString()
+    str = md5([this.props.file.name, nowTime, str].join('||'))
+    this.name = '/' + this.props.dir + '/' + str.toUpperCase() + '.' + suffix
+    console.log(this.name)
   }
   public initStatus (cb?: () => void) {
     if (this.state.uploadStatus === 'success') {
@@ -90,7 +114,7 @@ export default class extends React.Component <Props, States> {
     this.store.multipartUpload<{
       progress: (percentage: number, checkpoint: CheckPoint) => void,
       checkpoint?: CheckPoint
-    }, ClientPromise>(`/${this.props.dir}/oss-test.dmg`, this.props.file, {
+    }, ClientPromise>(this.name, this.props.file, {
       progress: async (percentage, checkpoint) => {
         this.setState({
           percentage
@@ -99,18 +123,25 @@ export default class extends React.Component <Props, States> {
           index: this.props.index,
           percentage
         })
-        this.tempCheckpoint = checkpoint
+        console.log(percentage, checkpoint, 'progress')
+        if (checkpoint) {
+          this.tempCheckpoint = checkpoint
+          this.uploadId = checkpoint.uploadId
+        }
       },
       checkpoint: this.tempCheckpoint
     }).then((res) => {
+      console.log(res, 'success')
       this.setState({
         uploadStatus: 'success'
       })
       bus.trigger('end-upload', {
         index: this.props.index,
-        status: 'success'
+        status: 'success',
+        url: res.res.requestUrls[0]
       })
     }).catch((err) => {
+      console.log(err, 'err')
       if (typeof err === 'object' && err.name === 'cancel') {
         this.setState({
           uploadStatus: 'pause'
@@ -196,6 +227,20 @@ export default class extends React.Component <Props, States> {
       break
     case 'delete':
       this.props.removeImg(this.props.index)
+      break
+    }
+  }
+  public removeFile () {
+    const status = this.state.uploadStatus
+    switch (status) {
+    case 'success':
+      // this.store.delete(this.name)
+      break
+    case 'failed':
+      this.store.abortMultipartUpload(this.name, this.uploadId)
+      break
+    case 'pause':
+      this.store.abortMultipartUpload(this.name, this.uploadId)
       break
     }
   }

@@ -27,8 +27,9 @@ interface States {
   percentage: number
   successNo: number
   failedNo: number
+  newNo: number // 新增数
 }
-type UploadStatus = 'start' | 'pause' | 'continue'
+type UploadStatus = 'start' | 'pause' | 'continue' | 'finish'
 @events()
 class WebUploader extends React.Component <Props, States> {
   public on: <T>(event: string, cb: (payload: T) => void) => void
@@ -36,15 +37,24 @@ class WebUploader extends React.Component <Props, States> {
   public off: (event: string) => void
   public files: File[] = []
   public percentages: number[] = [0]
+  public uploadedUrls: string[] = []
   public uploadedInfo: Array<'success' | 'failed'> = []
   public m: any
+  public defaultAccpet: string = 'jpeg,png,gif'
+  public allUploadStatus: any = {
+    start: '开始上传',
+    pause: '暂停上传',
+    continue: '继续上传',
+    finish: '上传完成'
+  }
   public state = {
     initShow: this.files.length === 0,
     files: this.files,
     uploadStatus: 'start',
     percentage: 0,
     successNo: 0,
-    failedNo: 0
+    failedNo: 0,
+    newNo: 0
   }
   public componentWillMount () {
     bus.on('end-upload', this.onEndUpload.bind(this))
@@ -52,7 +62,6 @@ class WebUploader extends React.Component <Props, States> {
   }
   public componentDidMount () {
     this.handleDrop()
-    this.showSuccessModal()
   }
   public handleDrop () {
     const $dropArea = $(this.refs['drop-area'])
@@ -83,15 +92,11 @@ class WebUploader extends React.Component <Props, States> {
         this.files.push(item)
       }
       this.filterRepeatFile()
-      this.setState({
-        files: this.files,
-        initShow: this.files.length === 0
-      })
     })
   }
   // 过滤文件
   public filterRepeatFile () {
-    const accept = this.props.accept || 'jpeg,png,gif'
+    const accept = this.props.accept || this.defaultAccpet
     const allowTypes = ('image/' + accept.replace(/[,|]/g, ',image/')).split(',')
     const temp: any = {}
     const files: File[] = []
@@ -109,12 +114,17 @@ class WebUploader extends React.Component <Props, States> {
           files.push(item)
         } else {
           notification.warning({
-            message: `${item.name} 文件已被忽略掉！`
+            message: `${item.name} 格式不符，已被忽略掉！`
           })
         }
       }
     })
     this.files = files
+    this.setState({
+      files: this.files,
+      initShow: this.files.length === 0
+    })
+    this.reckonNewNo()
   }
   public createPreview () {
     if (this.files.length) {
@@ -136,14 +146,16 @@ class WebUploader extends React.Component <Props, States> {
     )
   }
   public removeImage (index: number) {
+    bus.trigger('remove', index)
     this.files.splice(index, 1)
     this.uploadedInfo.splice(index, 1)
     this.percentages.splice(index, 1)
     this.setState({
-      files: Object.assign([], this.files),
+      files: this.files,
       initShow: this.files.length === 0
     })
-    console.log(this.files, this.state.files)
+    this.reckonFilesNo()
+    this.reckonPercentage()
   }
   public imageListView () {
     return (
@@ -172,8 +184,10 @@ class WebUploader extends React.Component <Props, States> {
       </div>
     )
   }
-  public startUpload () {
+  // 处理上传
+  public handleUpload () {
     bus.trigger('start-upload', this.state.uploadStatus)
+    let status = 'start'
     switch (this.state.uploadStatus) {
     case 'start':
       status = 'pause'
@@ -184,25 +198,45 @@ class WebUploader extends React.Component <Props, States> {
     case 'continue':
       status = 'pause'
       break
+    case 'finish':
+      status = 'finish'
+      this.uploadSuccess()
+      break
     }
     this.setState({
+      newNo: status === 'finish' ? this.state.newNo : 0,
       uploadStatus: status
     })
   }
+  // 监听上传进度
   public onPercentage (item: {index: number, percentage: number}) {
-    let sum = 0
     this.percentages[item.index] = item.percentage
-    console.log(item, this.percentages, 'percentage')
+    this.reckonPercentage()
+  }
+  // 计算总体进度
+  public reckonPercentage () {
+    let sum = 0
     this.percentages.map((v) => {
       sum += v
     })
     this.setState({
-      percentage: Math.round((sum / this.files.length) * 100)
+      percentage: Math.round((sum / this.files.length) * 100) || 0
     })
   }
-  public onEndUpload (item: {index: number, status: 'success' | 'failed'}) {
-    this.uploadedInfo[item.index] = item.status
+  // 计算新增的文件数目
+  public reckonNewNo () {
+    const { successNo, failedNo } = this.state
+    const sum = this.files.length
+    const newNo = sum - successNo - failedNo
+    this.setState({
+      newNo,
+      uploadStatus: newNo > 0 ? 'continue' : this.state.uploadStatus
+    })
+  }
+  // 计算成功失败的文件数目
+  public reckonFilesNo () {
     let successNo = 0
+    let uploadStatus = 'finish'
     this.uploadedInfo.map((v) => {
       if(v === 'success') {
         successNo += 1
@@ -214,49 +248,29 @@ class WebUploader extends React.Component <Props, States> {
       failedNo
     })
     if (this.uploadedInfo.length === this.files.length) {
+      if (successNo !== this.files.length || this.files.length === 0) {
+        uploadStatus = 'continue'
+      }
       this.setState({
-        uploadStatus: 'start'
+        uploadStatus
       })
     }
-    if (successNo === this.files.length) {
-      this.showSuccessModal()
-    }
   }
-  public showSuccessModal () {
-    this.m = new modal({
-      header: null,
-      footer: null,
-      mask: false,
-      maskClosable: false,
-      className: 'pilipa-web-uploader-success-modal',
-      content: (
-        <div className='pilipa-web-uploader-success-modal-content'>
-          <p>
-          本次票据上传成功！<br />
-          您上传的票据已完成，共1张（2.78K），成功上传1张!
-          </p>
-          <div className='pilipa-web-uploader-success-modal-footer'>
-            <div onClick={this.uploadSuccess.bind(this)}>上传成功</div>
-            <div onClick={this.continueUpload.bind(this)}>继续上传</div>
-          </div>
-        </div>
-      )
-    })
-    this.m.show()
+  // 监听上传结束
+  public onEndUpload (item: {index: number, status: 'success' | 'failed', url: string}) {
+    this.uploadedInfo[item.index] = item.status
+    this.uploadedUrls[item.index] = item.url
+    this.reckonFilesNo()
   }
   public uploadSuccess () {
-    console.log(this.m)
-    this.m.hide()
+    console.log(this.uploadedUrls, 'uploadedUrls')
     this.trigger('upload-success', null)
   }
-  public continueUpload () {
-    console.log('continue upload')
-  }
+  // 手动添加文件
   public toAddFile () {
     const file: any = $(this.refs.file)
     file.attr('multiple', 'multiple')
     file.off('change').on('change', () => {
-      console.log(this.files)
       const files = file[0].files
       for (const item of files) {
         if (item) {
@@ -264,12 +278,15 @@ class WebUploader extends React.Component <Props, States> {
         }
       }
       this.filterRepeatFile()
-      this.setState({
-        files: this.files,
-        initShow: this.files.length === 0
-      })
+      file[0].value = ''
     })
     file.trigger('click')
+  }
+  // 忽略未上传的
+  public toIgnore () {
+    this.setState({
+      uploadStatus: 'finish'
+    })
   }
   public render () {
     return (
@@ -296,11 +313,12 @@ class WebUploader extends React.Component <Props, States> {
             }
           </div>
         </div>
-        <div className='pilipa-web-uploader-footer'>
-            <div className='pilipa-web-uploader-info'>
-              {/* 选中98张票据，共6.02M */}
-              {
-                // ['pause', 'continue'].indexOf(this.state.uploadStatus) &&
+        {
+          this.state.files.length > 0 &&
+          <div className='pilipa-web-uploader-footer'>
+            {
+              this.state.uploadStatus !== 'start' &&
+              <div className='pilipa-web-uploader-info'>
                 <div className='pilipa-web-uploader-percentage'>
                   <span>{this.state.percentage}%</span>
                   <div
@@ -309,12 +327,25 @@ class WebUploader extends React.Component <Props, States> {
                   >
                   </div>
                 </div>
-              }
-              <p>
-                &nbsp;&nbsp;成功：<span style={{color: '#52c41a'}}>{this.state.successNo}</span>&nbsp;&nbsp;
-                失败：<span style={{color: '#cf1322'}}>{this.state.failedNo}</span>
-              </p>
-            </div>
+                <p style={{marginLeft: '15px'}}>
+                  共<b>{this.state.files.length}</b>张(100MB),
+                  成功<b style={{color: '#52c41a'}}>{this.state.successNo}</b>张,
+                  失败<b style={{color: '#cf1322'}}>{this.state.failedNo}</b>张,
+                  新增<b style={{color: '#0050b3'}}>
+                    {this.state.newNo}
+                  </b>张
+                </p>
+                {
+                  this.state.uploadStatus !== 'finish' &&
+                  <p style={{marginLeft: '15px'}}>
+                    上传失败请点击
+                    <span className='clickabled' onClick={this.handleUpload.bind(this)}>继续上传</span>
+                    或
+                    <span className='clickabled' onClick={this.toIgnore.bind(this)}>忽略</span>
+                  </p>
+                }
+              </div>
+            }
             <div className='pilipa-web-uploader-operate'>
               <div className='pilipa-web-uploader-operate'>
                 <div
@@ -322,17 +353,18 @@ class WebUploader extends React.Component <Props, States> {
                   className='pilipa-web-uploader-btn-default mr-10'
                 >
                   继续添加
-                  <input type='file' ref='file' style={{display: 'none'}} />
                 </div>
                 <div
                   className='pilipa-web-uploader-btn-primary'
-                  onClick={this.startUpload.bind(this)}
+                  onClick={this.handleUpload.bind(this)}
                 >
-                  {['开始', '暂停', '继续'][['start', 'pause', 'continue'].indexOf(this.state.uploadStatus)]}上传
+                  {this.allUploadStatus[this.state.uploadStatus]}
                 </div>
               </div>
             </div>
           </div>
+        }
+        <input type='file' ref='file' style={{display: 'none'}} />
       </div>
     )
   }

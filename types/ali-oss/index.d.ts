@@ -1,6 +1,6 @@
 
 declare module 'ali-oss' {
-  interface OSSConfig {
+  export interface ConfigProps {
     accessKeyId: string
     accessKeySecret: string
     stsToken?: string
@@ -26,6 +26,6 @@ declare module 'ali-oss' {
     delete: <T>(name: string) => T
     deleteMulti: (names: string[]) => void
   }
-  export function Wrapper (config: OSSConfig): Client
-  export default function client (config: OSSConfig): Client
+  export function Wrapper (configs: ConfigProps): Client
+  export default function client (configs: ConfigProps): Client
 }

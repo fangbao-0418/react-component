@@ -1,6 +1,6 @@
 import events from '../decorations/events'
 @events()
-class Events {
+export class Events {
   public on: any
   public trigger: any
   public off: any

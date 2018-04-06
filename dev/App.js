@@ -4,14 +4,18 @@ let hash
 let Component
 try {
   hash = location.match(/#([\w-]*)$/)[1]
-  Component = require('./' + hash + '.js').default
+  try {
+    Component = require('./' + hash + '.tsx').default
+  } catch (e) {
+    Component = require('./' + hash + '.js').default
+  }
 } catch (e) {
   console.log('home page')
 }
 
 export default class App extends React.Component {
   mapDemo () {
-    const demo = ['dropdown', 'auto-complete', 'voucher', 'modal', 'notification', 'loading', 'cookie', 'webuploader', 'searchView']
+    const demo = ['dropdown', 'auto-complete', 'voucher', 'modal', 'notification', 'loading', 'cookie', 'webuploader', 'searchView', 'test']
     const node = []
     demo.map((item, index) => {
       node.push(

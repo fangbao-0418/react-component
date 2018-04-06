@@ -1,15 +1,14 @@
-import { CheckPoint, Client, Wrapper as OSS } from 'ali-oss'
+import { CheckPoint, Client, ConfigProps, Wrapper as OSS } from 'ali-oss'
 import classNames from 'classnames'
 import $ from 'jquery'
 import React from 'react'
 import { md5 } from '../_util'
 import modal from '../modal'
 import bus from './bus'
-interface Props {
+export interface Props {
   file: File
   index: number
   removeImg?: (index: number) => void
-  accept?: string
   accessKeyId: string
   accessKeySecret: string
   stsToken: string
@@ -17,18 +16,21 @@ interface Props {
   region: string
   dir: string
 }
-interface States {
+export interface States {
   src: string
   percentage: number
   uploadStatus: string
   uploading: boolean
 }
-interface ClientPromise {
+export interface ClientPromise {
   then: (cb: (res: any) => void) => this
   catch: (cb: (e: any) => void) => this
   finally: (cb: (res: any, e: any) => void) => this
 }
-type UploadStatus = 'start' | 'pause' | 'continue'
+export interface P extends ConfigProps {
+  dir: string
+}
+export type UploadStatus = 'start' | 'pause' | 'continue'
 export default class extends React.Component <Props, States> {
   public deg = 0
   public state = {
@@ -41,6 +43,7 @@ export default class extends React.Component <Props, States> {
   public store: Client
   public name = ''
   public uploadId = ''
+  public dir = ''
   public componentWillMount () {
     this.readFile()
     const { accessKeyId, accessKeySecret, stsToken, bucket, region } = this.props
@@ -51,12 +54,13 @@ export default class extends React.Component <Props, States> {
       bucket,
       region
     })
+    this.dir = this.props.dir
     bus.on<UploadStatus>('start-upload', (status) => {
       this.initStatus(() => {
         this.startUpload(status)
       })
     })
-    bus.on('remove', this.removeFile.bind(this))
+    bus.on('oss-update', this.updateOss.bind(this))
     this.createFileName()
   }
   public componentDidMount () {
@@ -73,6 +77,18 @@ export default class extends React.Component <Props, States> {
   public componentWillUnmount () {
     console.log('will unmount')
   }
+  public updateOss (options: P) {
+    const { accessKeyId, accessKeySecret, stsToken, bucket, region, dir } = options
+    this.store = OSS({
+      accessKeyId,
+      accessKeySecret,
+      stsToken,
+      bucket,
+      region
+    })
+    this.dir = dir
+    // this.fileUpload()
+  }
   public createFileName () {
     const pattern = 'ABCDEFGHIJKLMNOPQRESUVWXYZabcdefghijklmnopqresuvwxyz1234567890'
     let i = 0
@@ -86,7 +102,7 @@ export default class extends React.Component <Props, States> {
     }
     const nowTime = new Date().getTime().toString()
     str = md5([this.props.file.name, nowTime, str].join('||'))
-    this.name = '/' + this.props.dir + '/' + str.toUpperCase() + '.' + suffix
+    this.name = '/' + this.dir + '/' + str.toUpperCase() + '.' + suffix
     console.log(this.name)
   }
   public initStatus (cb?: () => void) {
@@ -141,7 +157,7 @@ export default class extends React.Component <Props, States> {
         url: res.res.requestUrls[0]
       })
     }).catch((err) => {
-      console.log(err, 'err')
+      bus.trigger('error', err)
       if (typeof err === 'object' && err.name === 'cancel') {
         this.setState({
           uploadStatus: 'pause'
@@ -204,6 +220,7 @@ export default class extends React.Component <Props, States> {
       break
     case 'zoom-in':
       let zoomIn = false
+      console.log((zoomIn ? 'scale(1.1)' : 'scale(1)'), $img[0].style.transform)
       const m = new modal({
         header: null,
         footer: null,
@@ -214,7 +231,7 @@ export default class extends React.Component <Props, States> {
               onDoubleClick={() => {
                 zoomIn = !zoomIn
                 $('.pilipa-webuploader-images').css({
-                  transform: zoomIn ? 'scale(1.1)' : 'scale(1)'
+                  transform: (zoomIn ? 'scale(1.1)' : 'scale(1)')
                 })
               }}
               src={this.state.src}
@@ -226,7 +243,10 @@ export default class extends React.Component <Props, States> {
       m.show()
       break
     case 'delete':
-      this.props.removeImg(this.props.index)
+      if (this.props.removeImg) {
+        this.removeFile()
+        this.props.removeImg(this.props.index)
+      }
       break
     }
   }

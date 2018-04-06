@@ -62,7 +62,39 @@
   100%
     right: 10px
     opacity: 1
-
+@keyframes pilipaWebUploaderFold
+  0%
+    left: 0
+    opacity: 1
+  100%
+    left: 100%
+    opacity: 0
+    display: none
+@keyframes pilipaWebUploaderUnFold
+  0%
+    left: 100%
+    opacity: 0
+    display: block
+    width: 100%
+  100%
+    left: 0
+    opacity: 1
+    display: block
+    width: 100%
+@keyframes pilipaWebUploaderMenuFold
+  0%
+    opacity: 1
+    right: 0
+  100%
+    opacity: 0
+    right: -28px
+@keyframes pilipaWebUploaderMenuUnFold
+  0%
+    opacity: 0
+    right: -28px
+  100%
+    opacity: 1
+    right: 0
 .pilipa-fade-enter
   animation-name: pilipaFadeIn
 .pilipa-fade-leave
@@ -104,3 +136,24 @@
 .pilipa-notification-fade-leave.pilipa-notification-fade-active
   animation-play-state: running
   animation-name: pilipaNotificationFadeOut
+.pilipa-web-uploader-fold, .pilipa-web-uploader-unfold
+  animation-timing-function: linear
+  animation-duration: 0.3s;
+  animation-fill-mode: both
+  animation-play-state: paused
+.pilipa-web-uploader-fold.pilipa-web-uploader-active
+  animation-name: pilipaWebUploaderFold
+  animation-play-state: running
+.pilipa-web-uploader-unfold.pilipa-web-uploader-active
+  animation-name: pilipaWebUploaderUnFold
+.pilipa-web-uploader-menu-fold, .pilipa-web-uploader-menu-unfold
+  animation-timing-function: linear
+  animation-duration: 0.3s;
+  animation-fill-mode: both
+  animation-play-state: paused
+.pilipa-web-uploader-menu-fold.pilipa-web-uploader-menu-active
+  animation-name: pilipaWebUploaderMenuFold
+  animation-play-state: running
+.pilipa-web-uploader-menu-unfold.pilipa-web-uploader-menu-active
+  animation-name: pilipaWebUploaderMenuUnFold
+  animation-play-state: running

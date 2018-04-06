@@ -1,3 +1,4 @@
+import 'viewerjs/dist/viewer.css'
 import * as _util from './_util'
 export const { getCapital, md5, mount } = _util
 export { default as DropDown } from './dropdown'

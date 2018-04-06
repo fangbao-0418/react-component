@@ -58,7 +58,7 @@ gulp.task('autoprefix', function () {
 gulp.task('ts', function (cb) {
   var ts = require('gulp-typescript')
   var tsProject = ts.createProject('tsconfig.json', {
-    declaration: true,
+    declaration: true
   })
   gulp.src('components/**/*.ts?(x)')
     .pipe(tsProject())

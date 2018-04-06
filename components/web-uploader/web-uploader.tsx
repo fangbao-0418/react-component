@@ -74,6 +74,10 @@ class WebUploader extends React.Component <Props, States> {
   public componentDidMount () {
     this.handleDrop()
   }
+  public componentWillUnmount () {
+    console.log('willmount')
+    this.resetData()
+  }
   public handleDrop () {
     const $dropArea = $(this.refs['drop-area'])
     document.addEventListener('dragover', (event) => {
@@ -135,7 +139,7 @@ class WebUploader extends React.Component <Props, States> {
     const allowTypes = ('image/' + accept.replace(/[,|]/g, ',image/')).split(',')
     const temp: any = {}
     const files: File[] = []
-    let filterFiles: string[] = []
+    const filterFiles: string[] = []
     this.files.map((item, index) => {
       // 过滤重复文件
       if (
@@ -318,7 +322,24 @@ class WebUploader extends React.Component <Props, States> {
         urls.push(url)
       }
     })
+    this.resetData()
     bus.trigger('complete', urls)
+  }
+  public resetData () {
+    this.files = []
+    this.uploadedInfo = []
+    this.uploadedUrls = []
+    this.percentages = []
+    this.setState({
+      initShow: true,
+      uploadStatus: 'start',
+      files: [],
+      successNo: 0,
+      failedNo: 0,
+      newNo: 0,
+      percentage: 0,
+      sumSize: 'OKb'
+    })
   }
   // 忽略未上传的
   public toIgnore () {
@@ -350,6 +371,7 @@ class WebUploader extends React.Component <Props, States> {
   }
   public toClose () {
     $(`.pilia-web-uploader-menu-${WebUploader.id}`).remove()
+    this.resetData()
     bus.trigger('close')
   }
   public toFold () {

@@ -2,6 +2,7 @@ import { CheckPoint, Client, ConfigProps, Wrapper as OSS } from 'ali-oss'
 import classNames from 'classnames'
 import $ from 'jquery'
 import React from 'react'
+import Viewer from 'viewerjs'
 import { md5 } from '../_util'
 import modal from '../modal'
 import bus from './bus'
@@ -44,6 +45,7 @@ export default class extends React.Component <Props, States> {
   public name = ''
   public uploadId = ''
   public dir = ''
+  public viewer: Viewer
   public componentWillMount () {
     this.readFile()
     const { accessKeyId, accessKeySecret, stsToken, bucket, region } = this.props
@@ -65,6 +67,7 @@ export default class extends React.Component <Props, States> {
   }
   public componentDidMount () {
     const $el = $(this.refs.item)
+    const img = $(this.refs.img)
     $el.hover(() => {
       if ($el.find('.pilipa-web-uploader-imgage-uploading').length > 0) {
         if (this.state.uploadStatus === 'pause') {
@@ -73,9 +76,14 @@ export default class extends React.Component <Props, States> {
         $el.find('.pilipa-web-uploader-image-operate').hide()
       }
     })
+    if (!this.viewer) {
+      this.viewer = new Viewer($(img)[0], {
+      })
+    }
   }
   public componentWillUnmount () {
-    console.log('will unmount')
+    console.log('willunmount')
+    this.viewer.destroy()
   }
   public updateOss (options: P) {
     const { accessKeyId, accessKeySecret, stsToken, bucket, region, dir } = options
@@ -219,28 +227,7 @@ export default class extends React.Component <Props, States> {
       })
       break
     case 'zoom-in':
-      let zoomIn = false
-      console.log((zoomIn ? 'scale(1.1)' : 'scale(1)'), $img[0].style.transform)
-      const m = new modal({
-        header: null,
-        footer: null,
-        className: 'pilipa-web-uploader-show-images',
-        content: (
-          <div className='pilipa-webuploader-images'>
-            <img
-              onDoubleClick={() => {
-                zoomIn = !zoomIn
-                $('.pilipa-webuploader-images').css({
-                  transform: (zoomIn ? 'scale(1.1)' : 'scale(1)')
-                })
-              }}
-              src={this.state.src}
-              style={{maxWidth: '1200px', borderRadius: '4px'}}
-            />
-          </div>
-        )
-      })
-      m.show()
+      this.viewer.show()
       break
     case 'delete':
       if (this.props.removeImg) {

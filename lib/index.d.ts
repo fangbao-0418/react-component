@@ -1,3 +1,4 @@
+import 'viewerjs/dist/viewer.css';
 import * as _util from './_util';
 export declare const getCapital: typeof _util.getCapital, md5: typeof _util.md5, mount: typeof _util.mount;
 export { default as DropDown } from './dropdown';

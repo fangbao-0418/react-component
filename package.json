@@ -21,9 +21,9 @@
     "classnames": "^2.2.5",
     "font-awesome": "^4.7.0",
     "jquery": "^3.2.1",
-    "lettering.js": "^0.8.2",
     "react": "^16.2.0",
-    "react-dom": "^16.2.0"
+    "react-dom": "^16.2.0",
+    "viewerjs": "^1.0.0"
   },
   "devDependencies": {
     "@types/ali-oss": "^1.0.0",

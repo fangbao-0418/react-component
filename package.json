@@ -11,8 +11,7 @@
   },
   "files": [
     "dist",
-    "lib",
-    "types"
+    "lib"
   ],
   "author": "",
   "license": "ISC",
@@ -27,6 +26,7 @@
     "viewerjs": "^1.0.0"
   },
   "devDependencies": {
+    "@types/ali-oss": "^1.0.0",
     "@types/classnames": "^2.2.3",
     "@types/jquery": "^3.2.18",
     "@types/react": "^16.0.34",
@@ -81,7 +81,7 @@
     "uglifyjs-webpack-plugin": "^1.2.4",
     "url-loader": "^0.6.2",
     "webpack": "4.5.0",
-    "webpack-dev-middleware": "^3.1.2",
+    "webpack-dev-middleware": "^2.0.0",
     "webpack-hot-middleware": "^2.21.2"
   }
 }

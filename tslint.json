@@ -34,7 +34,8 @@
       "jsx-boolean-value": false,
       "jsx-no-lambda": false,
       "jsx-curly-spacing": false,
-      "only-arrow-functions": false
+      "only-arrow-functions": false,
+      "no-reference": false
     },
     "rulesDirectory": []
 }

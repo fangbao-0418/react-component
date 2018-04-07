@@ -1,7 +1,8 @@
 var path = require('path')
 const webpack = require('webpack')
-var HtmlWebpackPlugin = require('html-webpack-plugin')
-var ExtractTextPlugin = require('extract-text-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const extractCommon = new ExtractTextPlugin({
   filename: 'pilipa.min.css',
   allChunks: true
@@ -12,6 +13,7 @@ const extractCommon2 = new ExtractTextPlugin({
 })
 module.exports = [
   {
+    mode: 'production',
     entry: './index',
     output: {
       path: path.resolve(__dirname, 'dist'),
@@ -48,12 +50,13 @@ module.exports = [
         {
           test: /\.(ts|tsx)$/,
           exclude: /node_modules/,
+          include: [path.resolve(__dirname, 'components')],
           use: [
             {
               loader: 'babel-loader'
             },
             {
-              loader: 'awesome-typescript-loader'
+              loader: 'ts-loader'
             }
           ]
         },
@@ -122,13 +125,7 @@ module.exports = [
     },
     plugins: [
       extractCommon,
-      new webpack.optimize.UglifyJsPlugin({
-        compress: {
-          warnings: false,
-          drop_console: true,
-          drop_debugger: true
-        }
-      }),
+      new UglifyJsPlugin(),
       new webpack.NoEmitOnErrorsPlugin(),
       new webpack.IgnorePlugin(/(font-awesome|ali-oss)/)
     ],
@@ -144,6 +141,7 @@ module.exports = [
     }
   },
   {
+    mode: 'development',
     entry: './index',
     output: {
       path: path.resolve(__dirname, 'dist'),
@@ -180,12 +178,13 @@ module.exports = [
         {
           test: /\.(ts|tsx)$/,
           exclude: /node_modules/,
+          include: [path.resolve(__dirname, 'components')],
           use: [
             {
               loader: 'babel-loader'
             },
             {
-              loader: 'awesome-typescript-loader'
+              loader: 'ts-loader'
             }
           ]
         },

@@ -231,7 +231,7 @@ class WebUploader extends React.Component <Props, States> {
   }
   // 处理上传
   public handleUpload () {
-    bus.trigger('start-upload', this.state.uploadStatus)
+    bus.trigger('handle-upload', this.state.uploadStatus)
     let status = 'start'
     switch (this.state.uploadStatus) {
     case 'start':

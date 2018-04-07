@@ -42,9 +42,9 @@ function webUploader (opts: Options): Bus {
   bus.on('close', () => {
     m.hide()
   })
-  bus.on('complete', () => {
-    m.hide()
-  })
+  // bus.on('complete', () => {
+  //   m.hide()
+  // })
   console.log(m, 'm')
   return bus
 }

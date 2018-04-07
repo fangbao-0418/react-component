@@ -3,10 +3,11 @@ var webpack = require('webpack')
 var HtmlWebpackPlugin = require('html-webpack-plugin')
 var ExtractTextPlugin = require('extract-text-webpack-plugin')
 const extractCommon = new ExtractTextPlugin({
-  filename: '[name][contenthash].css',
+  filename: '[name]-[hash].css',
   allChunks: true
 })
 module.exports = {
+  mode: 'development',
   entry: [
     'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000&reload=true',
     './dev/index'
@@ -70,10 +71,11 @@ module.exports = {
         test: /\.css$/,
         use: extractCommon.extract({
           fallback: 'style-loader',
-          use: [
-            'css-loader?sourceMap=true',
-            'postcss-loader'
-          ]
+          use: [{
+            loader: 'css-loader'
+          }, {
+            loader: 'postcss-loader'
+          }]
         })
       },
       {

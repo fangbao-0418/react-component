@@ -46,6 +46,7 @@ export default class extends React.Component <Props, States> {
   public uploadId = ''
   public dir = ''
   public viewer: Viewer
+  public isFinished: boolean = true
   public componentWillMount () {
     this.readFile()
     const { accessKeyId, accessKeySecret, stsToken, bucket, region } = this.props
@@ -57,9 +58,10 @@ export default class extends React.Component <Props, States> {
       region
     })
     this.dir = this.props.dir
-    bus.on<UploadStatus>('start-upload', (status) => {
+    bus.on<UploadStatus>('handle-upload', (status) => {
+      if (this.isFinished === false) {return}
       this.initStatus(() => {
-        this.startUpload(status)
+        this.handleUpload(status)
       })
     })
     bus.on('oss-update', this.updateOss.bind(this))
@@ -82,10 +84,25 @@ export default class extends React.Component <Props, States> {
     }
   }
   public componentWillUnmount () {
-    console.log('willunmount')
-    this.viewer.destroy()
+    this.isFinished = false
+    if (this.viewer) {
+      this.viewer.destroy()
+    }
+  }
+  public initStatus (cb?: () => void) {
+    if (['success'].indexOf(this.state.uploadStatus) > -1) {
+      return
+    }
+    this.setState({
+      uploadStatus: 'unknow'
+    }, () => {
+      if (cb) {
+        cb()
+      }
+    })
   }
   public updateOss (options: P) {
+    if (this.isFinished === false) {return}
     const { accessKeyId, accessKeySecret, stsToken, bucket, region, dir } = options
     this.store = OSS({
       accessKeyId,
@@ -112,18 +129,6 @@ export default class extends React.Component <Props, States> {
     str = md5([this.props.file.name, nowTime, str].join('||'))
     this.name = '/' + this.dir + '/' + str.toUpperCase() + '.' + suffix
     console.log(this.name)
-  }
-  public initStatus (cb?: () => void) {
-    if (this.state.uploadStatus === 'success') {
-      return
-    }
-    this.setState({
-      uploadStatus: 'unknow'
-    }, () => {
-      if (cb) {
-        cb()
-      }
-    })
   }
   public readFile () {
     const reader: FileReader = new FileReader()
@@ -185,7 +190,7 @@ export default class extends React.Component <Props, States> {
       })
     })
   }
-  public startUpload (status: UploadStatus) {
+  public handleUpload (status: UploadStatus) {
     if (this.state.uploadStatus === 'success') {
       return
     }

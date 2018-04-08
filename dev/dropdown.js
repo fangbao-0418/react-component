@@ -26,6 +26,7 @@ export default class extends React.Component {
     return (
       <div>
         <DropDown
+          title='测试数据55'
           style={{float: 'left', marginRight: '20px'}}
           data={this.data}
           callBack={(item) => {
@@ -34,6 +35,7 @@ export default class extends React.Component {
           filter
         />
         <DropDown
+          title='测试数据'
           style={{float: 'left'}}
           data={this.data}
           callBack={(item) => {

@@ -61,57 +61,58 @@ export default class extends React.Component<MyProps, MyStates> {
     $(button).hover(() => {
       this.handleEnter()
     }, (e) => {
-      // this.handleLeave()
+      this.handleLeave()
     })
-    $('html').on('click', (event) => {
-      console.log('click')
-      if($dropdowm.find(event.target).length === 0) {
-        this.handleLeave()
-      }
-    })
+    // $(document).on('click', (event) => {
+    //   console.log('click')
+    //   if($dropdowm.find(event.target).length === 0) {
+    //     this.handleLeave()
+    //   }
+    // })
     $(document).keydown((event) => {
-      const keyCode = event.keyCode
-      let { selectedIndex } = this.state
-      const $items = $dropdowm.find('.results .items')
-      const scrollTop = $items.scrollTop()
-      const itemsHeight = $items.height()
-      let liOffsetTop = 0
-      if ($items.length === 0) {
-        return
-      }
-      $items.find('li').eq(selectedIndex).trigger('mouseleave')
-      switch (keyCode) {
-      // 回车
-      case 13:
-        console.log(this.state.selectedIndex, '13')
-        $items.find('li').eq(this.state.selectedIndex).trigger('click')
-        break
-      // ↑
-      case 38:
-        selectedIndex = selectedIndex <= 0 ? 0 : selectedIndex - 1
-        liOffsetTop = $items.find('li').eq(selectedIndex)[0].offsetTop
-        if (scrollTop > liOffsetTop) {
-          $items.scrollTop(liOffsetTop)
-        }
-        this.setState({
-          selectedIndex
-        })
-        break
-      // ↓
-      case 40:
-        selectedIndex = selectedIndex >= this.allData.length - 1 ? this.allData.length - 1 : selectedIndex + 1
-        liOffsetTop = $items.find('li').eq(selectedIndex)[0].offsetTop
-        if (scrollTop + itemsHeight - $items.find('li').eq(selectedIndex).height() < liOffsetTop) {
-          $items.scrollTop(liOffsetTop - itemsHeight + $items.find('li').eq(selectedIndex).height())
-        }
-        this.setState({
-          selectedIndex
-        })
-        // scrollTop += 34
-        // $items.scrollTop(scrollTop)
-        break
-      }
+      this.onKeyDown(event)
     })
+  }
+  public onKeyDown (event: any) {
+    const $dropdowm = $(this.refs.dropdown)
+    const keyCode = event.keyCode
+    let { selectedIndex } = this.state
+    const $items = $dropdowm.find('.results .items')
+    const scrollTop = $items.scrollTop()
+    const itemsHeight = $items.height()
+    let liOffsetTop = 0
+    if ($items.length === 0) {
+      return
+    }
+    switch (keyCode) {
+    // 回车
+    case 13:
+      console.log(this.state.selectedIndex, '13')
+      $items.find('li').eq(this.state.selectedIndex).trigger('click')
+      break
+    // ↑
+    case 38:
+      selectedIndex = selectedIndex <= 0 ? 0 : selectedIndex - 1
+      liOffsetTop = $items.find('li').eq(selectedIndex)[0].offsetTop
+      if (scrollTop > liOffsetTop) {
+        $items.scrollTop(liOffsetTop)
+      }
+      this.setState({
+        selectedIndex
+      })
+      break
+    // ↓
+    case 40:
+      selectedIndex = selectedIndex >= this.allData.length - 1 ? this.allData.length - 1 : selectedIndex + 1
+      liOffsetTop = $items.find('li').eq(selectedIndex)[0].offsetTop
+      if (scrollTop + itemsHeight - $items.find('li').eq(selectedIndex).height() < liOffsetTop) {
+        $items.scrollTop(scrollTop + $items.find('li').eq(selectedIndex)[0].clientHeight)
+      }
+      this.setState({
+        selectedIndex
+      })
+      break
+    }
   }
   public handleAllData (data: any[]) {
     const { key, title } = this.props.setFields || {key: '', title: ''}
@@ -138,7 +139,7 @@ export default class extends React.Component<MyProps, MyStates> {
     console.log(this.selectedIndex, 's')
     const scrollTop = $items.find('li').eq(this.selectedIndex)[0].offsetTop
     console.log($items.find('li').eq(this.selectedIndex)[0].offsetTop)
-    $items.scrollTop(scrollTop - $items.find('li').eq(this.selectedIndex).height() * 3)
+    $items.scrollTop(scrollTop - $items.find('li').eq(this.selectedIndex)[0].clientHeight * 3)
   }
   public handleEnter () {
     if (this.t) {
@@ -154,7 +155,7 @@ export default class extends React.Component<MyProps, MyStates> {
         }
       })
       $(results).one('mouseleave', () => {
-        // this.handleLeave()
+        this.handleLeave()
       })
       return
     }
@@ -172,7 +173,7 @@ export default class extends React.Component<MyProps, MyStates> {
         clearTimeout(this.t)
       })
       $(results).one('mouseleave', () => {
-        // this.handleLeave()
+        this.handleLeave()
       })
       $(results).children('.items').scroll((e) => {
         const scrollTop = e.target.scrollTop
@@ -270,7 +271,8 @@ export default class extends React.Component<MyProps, MyStates> {
                   <li
                     key={key}
                     className={ClassNames({
-                      active: key === this.state.selectedIndex
+                      active: key === this.state.selectedIndex,
+                      selected: key === this.selectedIndex
                     })}
                     title={item.title}
                     onClick={this.handleClick.bind(this, item, key)}

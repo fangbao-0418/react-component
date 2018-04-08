@@ -24,22 +24,29 @@ export interface MyStates {
     dataTmp: T[];
     title?: string;
     page: number;
+    selectedIndex: number;
 }
 export default class  extends React.Component<MyProps, MyStates> {
     pageNum: number;
     t: any;
     allData: T[];
     defaultCls: string;
+    defaultPage: number;
+    selectedIndex: number;
+    seleted: boolean;
     constructor(props: MyProps);
     componentWillReceiveProps(props: MyProps): void;
     componentDidMount(): void;
+    onKeyDown(event: any): void;
     handleAllData(data: any[]): void;
+    scrollToSelectedPos(): void;
     handleEnter(): void;
     handleLeave(): void;
     handleClick(item: {
         key: number;
         title: string;
-    }): void;
+    }, index: number): void;
     handleChange(): void;
+    onMouseEnter(key: number): void;
     render(): JSX.Element;
 }

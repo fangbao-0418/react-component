@@ -24,21 +24,26 @@ export interface MyStates {
   dataTmp: T[]
   title?: string
   page: number
+  selectedIndex: number
 }
 export default class extends React.Component<MyProps, MyStates> {
   public pageNum = 20
   public t: any
   public allData: T[]
   public defaultCls = 'pilipa-dropdown'
+  public defaultPage = 1
+  public selectedIndex = 0
+  public seleted = false
   public constructor (props: MyProps) {
     super(props)
     this.handleAllData(this.props.data)
     this.state = {
-      page: 1,
+      page: this.defaultPage,
       visible: false,
       title: this.props.title || '',
-      data: this.allData.slice(0, this.pageNum),
-      dataTmp: this.allData
+      data: this.allData.slice(0, this.pageNum * this.defaultPage),
+      dataTmp: this.allData,
+      selectedIndex: this.selectedIndex
     }
   }
   public componentWillReceiveProps (props: MyProps) {
@@ -51,15 +56,66 @@ export default class extends React.Component<MyProps, MyStates> {
     }
   }
   public componentDidMount () {
+    const $dropdowm = $(this.refs.dropdown)
     const { button } = this.refs
     $(button).hover(() => {
       this.handleEnter()
     }, (e) => {
-      this.handleLeave()
+      // this.handleLeave()
+    })
+    $('html').on('click', (event) => {
+      console.log('click')
+      if($dropdowm.find(event.target).length === 0) {
+        this.handleLeave()
+      }
+    })
+    $(document).keydown((event) => {
+      const keyCode = event.keyCode
+      let { selectedIndex } = this.state
+      const $items = $dropdowm.find('.results .items')
+      const scrollTop = $items.scrollTop()
+      const itemsHeight = $items.height()
+      let liOffsetTop = 0
+      if ($items.length === 0) {
+        return
+      }
+      $items.find('li').eq(selectedIndex).trigger('mouseleave')
+      switch (keyCode) {
+      // 回车
+      case 13:
+        console.log(this.state.selectedIndex, '13')
+        $items.find('li').eq(this.state.selectedIndex).trigger('click')
+        break
+      // ↑
+      case 38:
+        selectedIndex = selectedIndex <= 0 ? 0 : selectedIndex - 1
+        liOffsetTop = $items.find('li').eq(selectedIndex)[0].offsetTop
+        if (scrollTop > liOffsetTop) {
+          $items.scrollTop(liOffsetTop)
+        }
+        this.setState({
+          selectedIndex
+        })
+        break
+      // ↓
+      case 40:
+        selectedIndex = selectedIndex >= this.allData.length - 1 ? this.allData.length - 1 : selectedIndex + 1
+        liOffsetTop = $items.find('li').eq(selectedIndex)[0].offsetTop
+        if (scrollTop + itemsHeight - $items.find('li').eq(selectedIndex).height() < liOffsetTop) {
+          $items.scrollTop(liOffsetTop - itemsHeight + $items.find('li').eq(selectedIndex).height())
+        }
+        this.setState({
+          selectedIndex
+        })
+        // scrollTop += 34
+        // $items.scrollTop(scrollTop)
+        break
+      }
     })
   }
   public handleAllData (data: any[]) {
     const { key, title } = this.props.setFields || {key: '', title: ''}
+    const selectTitle = this.props.title
     data = this.props.prePend === undefined ? data : [this.props.prePend].concat(data)
     this.allData = []
     data.map((item, index) => {
@@ -68,8 +124,21 @@ export default class extends React.Component<MyProps, MyStates> {
         title: item[title || 'title'],
         capital: getCapital(item[title || 'title']) || ['']
       }
+      if (this.props.title === item[title || 'title']) {
+        this.defaultPage = Math.ceil(index / this.pageNum)
+        this.selectedIndex = index
+      }
       this.allData[index] = newItem
     })
+  }
+  // 滚动到选中的位置
+  public scrollToSelectedPos () {
+    const $dropdowm = $(this.refs.dropdown)
+    const $items = $dropdowm.find('.results .items')
+    console.log(this.selectedIndex, 's')
+    const scrollTop = $items.find('li').eq(this.selectedIndex)[0].offsetTop
+    console.log($items.find('li').eq(this.selectedIndex)[0].offsetTop)
+    $items.scrollTop(scrollTop - $items.find('li').eq(this.selectedIndex).height() * 3)
   }
   public handleEnter () {
     if (this.t) {
@@ -77,6 +146,7 @@ export default class extends React.Component<MyProps, MyStates> {
     }
     let { results } = this.refs
     if (results) {
+      this.scrollToSelectedPos()
       $(results).removeClass('custom-slide-up-leave')
       $(results).one('mouseover', () => {
         if (this.t) {
@@ -84,13 +154,14 @@ export default class extends React.Component<MyProps, MyStates> {
         }
       })
       $(results).one('mouseleave', () => {
-        this.handleLeave()
+        // this.handleLeave()
       })
       return
     }
     this.setState({
       visible: true
     }, () => {
+      this.scrollToSelectedPos()
       results = this.refs.results
       $(results).removeClass('custom-slide-up-leave')
       $(results).addClass('custom-slide-up-enter')
@@ -101,7 +172,7 @@ export default class extends React.Component<MyProps, MyStates> {
         clearTimeout(this.t)
       })
       $(results).one('mouseleave', () => {
-        this.handleLeave()
+        // this.handleLeave()
       })
       $(results).children('.items').scroll((e) => {
         const scrollTop = e.target.scrollTop
@@ -130,19 +201,24 @@ export default class extends React.Component<MyProps, MyStates> {
         $(results).addClass('hidden')
         this.setState({
           visible: false,
-          page: 1,
-          data: this.allData.slice(0, this.pageNum),
-          dataTmp: this.allData
+          selectedIndex: this.selectedIndex
+          // page: 1,
+          // data: this.allData.slice(0, this.pageNum),
+          // dataTmp: this.allData
         })
+        this.seleted = false
       }, 200)
     }, 100)
   }
-  public handleClick (item: {key: number, title: string}) {
-    this.handleLeave()
+  public handleClick (item: {key: number, title: string}, index: number) {
+    this.seleted = true
+    this.selectedIndex = index
     const { callBack } = this.props
     this.setState({
-      title: item.title
+      title: item.title,
+      selectedIndex: index
     })
+    this.handleLeave()
     if (callBack) {
       setTimeout(() => {
         callBack(item)
@@ -163,13 +239,21 @@ export default class extends React.Component<MyProps, MyStates> {
       dataTmp: res
     })
   }
+  public onMouseEnter (key: number) {
+    if (this.seleted) {
+      return
+    }
+    this.setState({
+      selectedIndex: key
+    })
+  }
   public render () {
     const { className, style, filter } = this.props
     const { visible, data } = this.state
     let { title } = this.state
     title = title || this.allData.length && this.allData[0].title || ''
     return (
-      <div className={ClassNames(this.defaultCls, className)} style={style}>
+      <div className={ClassNames(this.defaultCls, className)} style={style} ref='dropdown'>
         <div className='costom-btn-group' ref='button'>
           <div className='btn-left'><span title={title}>{title}</span></div>
           <div className='btn-right'>
@@ -182,7 +266,19 @@ export default class extends React.Component<MyProps, MyStates> {
           <div className='items'>
             <ul>
               {data.length > 0 && data.map((item: T, key: number) => {
-                return (<li key={key} title={item.title} onClick={this.handleClick.bind(this, item)}>{item.title}</li>)
+                return (
+                  <li
+                    key={key}
+                    className={ClassNames({
+                      active: key === this.state.selectedIndex
+                    })}
+                    title={item.title}
+                    onClick={this.handleClick.bind(this, item, key)}
+                    onMouseEnter={this.onMouseEnter.bind(this, key)}
+                  >
+                    {item.title}
+                  </li>
+                )
               })}
             </ul>
           </div>

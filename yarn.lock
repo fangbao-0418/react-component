@@ -15,19 +15,21 @@
   resolved "http://registry.npm.taobao.org/@types/jquery/download/@types/jquery-3.2.18.tgz#a1cd262034cd8c79fa4d9b2a409d8f747ac2f72f"
 
 "@types/node@*":
-  version "9.3.0"
-  resolved "http://registry.npm.taobao.org/@types/node/download/@types/node-9.3.0.tgz#3a129cda7c4e5df2409702626892cb4b96546dd5"
+  version "9.6.2"
+  resolved "http://registry.npm.taobao.org/@types/node/download/@types/node-9.6.2.tgz#e49ac1adb458835e95ca6487bc20f916b37aff23"
 
-"@types/react-dom@^16.0.3":
-  version "16.0.3"
-  resolved "http://registry.npm.taobao.org/@types/react-dom/download/@types/react-dom-16.0.3.tgz#8accad7eabdab4cca3e1a56f5ccb57de2da0ff64"
+"@types/react-dom@^16.0.4":
+  version "16.0.4"
+  resolved "http://registry.npm.taobao.org/@types/react-dom/download/@types/react-dom-16.0.4.tgz#2e8fd45f5443780ed49bf2cdd9809e6091177a7d"
   dependencies:
     "@types/node" "*"
     "@types/react" "*"
 
-"@types/react@*", "@types/react@^16.0.34":
-  version "16.0.34"
-  resolved "http://registry.npm.taobao.org/@types/react/download/@types/react-16.0.34.tgz#7a8f795afd8a404a9c4af9539b24c75d3996914e"
+"@types/react@*", "@types/react@16.3.5":
+  version "16.3.5"
+  resolved "http://registry.npm.taobao.org/@types/react/download/@types/react-16.3.5.tgz#bd3b21285602ea7cadb4b9e0d9711d96fd5692cc"
+  dependencies:
+    csstype "^2.0.0"
 
 abbrev@1:
   version "1.1.1"
@@ -1995,6 +1997,10 @@ csso@~3.3.0:
   resolved "http://registry.npm.taobao.org/csso/download/csso-3.3.1.tgz#e069a8f52adcf53685a8a7374256ccbc22c6ce3e"
   dependencies:
     css-tree "1.0.0-alpha25"
+
+csstype@^2.0.0:
+  version "2.1.1"
+  resolved "http://registry.npm.taobao.org/csstype/download/csstype-2.1.1.tgz#37b01a7a9958ef0b88167ff6678deccd732e0ae2"
 
 currently-unhandled@^0.4.1:
   version "0.4.1"

@@ -48,9 +48,11 @@ export default class extends React.Component <Props, States> {
   public dir = ''
   public viewer: Viewer
   public isFinished: boolean = true
+  public callback: any
   public componentWillMount () {
     this.readFile()
     const { accessKeyId, accessKeySecret, stsToken, bucket, region } = this.props
+    this.handleCallBack()
     this.store = OSS({
       accessKeyId,
       accessKeySecret,
@@ -88,6 +90,24 @@ export default class extends React.Component <Props, States> {
     this.isFinished = false
     if (this.viewer) {
       this.viewer.destroy()
+    }
+  }
+  public handleCallBack () {
+    const callback = this.props.callBack
+    if (!callback) {
+      return
+    }
+    if (typeof callback === 'object' && typeof callback.body === 'string' && typeof this.props.file === 'object') {
+      const file: any = this.props.file
+      const body = callback.body.replace(/\${(file)(\.(\w+))?}/g, ($0: string, $1: string, $2: string, $3: string) => {
+        console.log($3, '$3')
+        if ($3) {
+          return file[$3]
+        }
+        return $0
+      })
+      this.callback = Object.assign({}, callback, {body})
+      console.log(body, this.callback)
     }
   }
   public initStatus (cb?: () => void) {
@@ -161,7 +181,7 @@ export default class extends React.Component <Props, States> {
         }
       },
       checkpoint: this.tempCheckpoint,
-      callback: this.props.callBack
+      callback: this.callback
     }).then((res) => {
       console.log(res, 'success')
       this.setState({

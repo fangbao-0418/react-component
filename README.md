@@ -8,8 +8,8 @@ yarn add pilipa --registry http://npmregistry.i-counting.cn
 
 # Development
 ```
-npm config set registry http://npmregistry.i-counting.cn
 yarn install
+yarn add ali-oss@5.0.0 font-awesome@4.7.0 jquery@3.3.1 react@16.3.1 react-dom@16.3.1 viewerjs@1.0.0 -P
 npm run dev
 ...
 npm run lib

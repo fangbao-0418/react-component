@@ -37,6 +37,7 @@ export default class  extends React.Component<MyProps, MyStates> {
     constructor(props: MyProps);
     componentWillReceiveProps(props: MyProps): void;
     componentDidMount(): void;
+    componentWillUnmount(): void;
     onKeyDown(event: any): void;
     handleAllData(data: any[]): void;
     scrollToSelectedPos(): void;

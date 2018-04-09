@@ -16,21 +16,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "ali-oss": "^4.13.2",
     "babel-polyfill": "^6.26.0",
-    "classnames": "^2.2.5",
-    "font-awesome": "^4.7.0",
-    "jquery": "^3.2.1",
-    "react": "^16.2.0",
-    "react-dom": "^16.2.0",
-    "viewerjs": "^1.0.0"
+    "classnames": "^2.2.5"
   },
   "devDependencies": {
     "@types/ali-oss": "^1.0.0",
     "@types/classnames": "^2.2.3",
     "@types/jquery": "^3.2.18",
-    "@types/react": "16.3.5",
-    "@types/react-dom": "^16.0.4",
+    "@types/react-dom": "16.0.2",
     "autoprefixer": "^7.2.5",
     "awesome-typescript-loader": "^5.0.0",
     "babel-core": "^6.26.0",
@@ -83,5 +76,13 @@
     "webpack": "4.5.0",
     "webpack-dev-middleware": "^2.0.0",
     "webpack-hot-middleware": "^2.21.2"
+  },
+  "peerDependencies": {
+    "ali-oss": "^5.0.0",
+    "font-awesome": "^4.7.0",
+    "jquery": "^3.3.1",
+    "react": "^16.3.1",
+    "react-dom": "^16.3.1",
+    "viewerjs": "^1.0.0"
   }
 }

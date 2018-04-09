@@ -73,6 +73,12 @@ export default class extends React.Component<MyProps, MyStates> {
       this.onKeyDown(event)
     })
   }
+  public componentWillUnmount () {
+    if (this.t) {
+      clearTimeout(this.t)
+    }
+    console.log('will unmount')
+  }
   public onKeyDown (event: any) {
     const $dropdowm = $(this.refs.dropdown)
     const keyCode = event.keyCode

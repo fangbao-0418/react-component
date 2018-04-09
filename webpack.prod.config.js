@@ -127,7 +127,7 @@ module.exports = [
       extractCommon,
       new UglifyJsPlugin(),
       new webpack.NoEmitOnErrorsPlugin(),
-      new webpack.IgnorePlugin(/(font-awesome|ali-oss)/)
+      new webpack.IgnorePlugin(/(font-awesome)/)
     ],
     resolve: {
       extensions: ['.tsx', '.ts', '.jsx', '.js', '.min.js', '.styl', '.css']

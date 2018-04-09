@@ -16,6 +16,7 @@ export interface Props {
   bucket: string
   region: string
   dir: string
+  callBack?: any
 }
 export interface States {
   src: string
@@ -143,6 +144,7 @@ export default class extends React.Component <Props, States> {
     this.store.multipartUpload<{
       progress: (percentage: number, checkpoint: CheckPoint) => void,
       checkpoint?: CheckPoint
+      callback?: any
     }, ClientPromise>(this.name, this.props.file, {
       progress: async (percentage, checkpoint) => {
         this.setState({
@@ -158,7 +160,8 @@ export default class extends React.Component <Props, States> {
           this.uploadId = checkpoint.uploadId
         }
       },
-      checkpoint: this.tempCheckpoint
+      checkpoint: this.tempCheckpoint,
+      callback: this.props.callBack
     }).then((res) => {
       console.log(res, 'success')
       this.setState({

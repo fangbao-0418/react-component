@@ -13,6 +13,7 @@ export interface Options {
   maxUploadNum?: number
   uploadTarget?: string
   mark?: string
+  callback?: {}
 }
 // events: complete 完成, close 关闭
 function webUploader (opts: Options): Bus {
@@ -35,6 +36,7 @@ function webUploader (opts: Options): Bus {
         maxUploadNum={opts.maxUploadNum}
         uploadTarget={opts.uploadTarget}
         mark={opts.mark}
+        callBack={opts.callback}
       />
     )
   })

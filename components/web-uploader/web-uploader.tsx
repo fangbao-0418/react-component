@@ -22,6 +22,7 @@ export interface Props {
   maxUploadNum?: number
   uploadTarget?: string
   mark?: string
+  callBack?: {}
 }
 export interface States {
   initShow: boolean
@@ -221,6 +222,7 @@ class WebUploader extends React.Component <Props, States> {
                   index={index}
                   file={file}
                   removeImg={this.removeImage.bind(this, index)}
+                  callBack={this.props.callBack}
                 />
               )
             })

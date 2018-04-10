@@ -125,7 +125,11 @@ module.exports = [
     },
     plugins: [
       extractCommon,
-      new UglifyJsPlugin(),
+      new UglifyJsPlugin({
+        uglifyOptions: {
+          compress: true
+        }
+      }),
       new webpack.NoEmitOnErrorsPlugin(),
       new webpack.IgnorePlugin(/(font-awesome)/)
     ],

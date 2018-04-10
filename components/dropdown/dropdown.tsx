@@ -34,6 +34,7 @@ export default class extends React.Component<MyProps, MyStates> {
   public defaultPage = 1
   public selectedIndex = 0
   public seleted = false
+  public event: any
   public constructor (props: MyProps) {
     super(props)
     this.handleAllData(this.props.data)
@@ -72,6 +73,11 @@ export default class extends React.Component<MyProps, MyStates> {
     $(document).keydown((event) => {
       this.onKeyDown(event)
     })
+    $(document).keyup(() => {
+      if (this.event) {
+        this.event.returnValue = false
+      }
+    })
   }
   public componentWillUnmount () {
     if (this.t) {
@@ -98,6 +104,8 @@ export default class extends React.Component<MyProps, MyStates> {
       break
     // ↑
     case 38:
+      this.event = event
+      event.preventDefault()
       selectedIndex = selectedIndex <= 0 ? 0 : selectedIndex - 1
       liOffsetTop = $items.find('li').eq(selectedIndex)[0].offsetTop
       if (scrollTop > liOffsetTop) {
@@ -109,6 +117,8 @@ export default class extends React.Component<MyProps, MyStates> {
       break
     // ↓
     case 40:
+      this.event = event
+      event.preventDefault()
       selectedIndex = selectedIndex >= this.allData.length - 1 ? this.allData.length - 1 : selectedIndex + 1
       liOffsetTop = $items.find('li').eq(selectedIndex)[0].offsetTop
       if (scrollTop + itemsHeight - $items.find('li').eq(selectedIndex).height() < liOffsetTop) {

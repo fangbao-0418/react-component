@@ -25,6 +25,7 @@ declare module 'ali-oss' {
     abortMultipartUpload: <T>(name: string, uploadId: string) => T
     delete: <T>(name: string) => T
     deleteMulti: (names: string[]) => void
+    completeMultipartUpload: <T>(name: string, uploadId: string, parts: Array<{number: number, etag: string}>) => T
   }
   export function Wrapper (configs: ConfigProps): Client
   export default function client (configs: ConfigProps): Client

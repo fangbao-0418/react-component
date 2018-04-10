@@ -1,9 +1,9 @@
 import React from 'react'
 import { webUploader } from '../components'
 /* tslint:disable:max-line-length quotemark */
-let ossCfg: any = JSON.parse("{\"status\":true,\"errorcode\":\"\",\"message\":\"\",\"data\":\"{\\\"AccessKeyId\\\":\\\"STS.EPg1BY4rwKVQtgyfXm3auTC6S\\\",\\\"AccessKeySecret\\\":\\\"Du3LCsKhK6ZkymxPEaJxPfY32ykDM6edYk2kQV4mAXPT\\\",\\\"SecurityToken\\\":\\\"CAISiwJ1q6Ft5B2yfSjIpJPSevjt2a1W\/JS6dkHIglg4P+5Zu4adsTz2IHlNfHVsBeEbtPQznWFZ7\/gflr90UIQAXU3AbNN5q5pK9QfkaoHKtteutSHRWCNnXTr9MQXy+eOPScebJYqvV5XAQlTAkTAJstmeXD6+XlujHISUgJp8FLo+VRW5ajw0b7U\/ZHEVyqkgOGDWKOymPzPzn2PUFzAIgAdnjn5l4qnNqa\/1qDim1Qanlb5O+d2ufcP7NZAwY60SCYnlgLZEEYPayzNV5hRw86N7sbdJ4z+vvKvGWgAJv0naYreOooE2fV4gOPUgZalft73klPl5ouWWmZnzz1NENupYSD\/P318jEzFNxIkagAEFYoqpNJ+XtBrhi9bp1x7zMl7rKpWL7WBHdh2D1jaStnACE1qaR1R\/LVO\/QXoTQwPtaLV3v3Vmj9RthooNBluchRpTtq5y7817bwX3LqBlc+NEttGyun8ZO\/KyvyQDEkQrrxodlnaIYDTrZOz4xCmEaVoxvJbWyV6yZlwJQ5IxTQ==\\\",\\\"bucketName\\\":\\\"pilipa\\\",\\\"dir\\\":\\\"pilipa\/375\/7333\/2018-03-31\\\",\\\"regionId\\\":\\\"cn-beijing\\\"}\"}")
+let ossCfg: any = JSON.parse("{\"status\":true,\"errorcode\":\"\",\"message\":\"\",\"data\":\"{\\\"AccessKeyId\\\":\\\"STS.K1rJDYxhgBBCncqPvUDqWPPkz\\\",\\\"AccessKeySecret\\\":\\\"7Qb5XDy5dCd3nNEn7CeZetKrD8g9wCfRuiw8LwYVLK9C\\\",\\\"SecurityToken\\\":\\\"CAISiwJ1q6Ft5B2yfSjIqvLHAf7tlbdG9YCobEXAtHYASP57v5XAmDz2IHlNfHVsBeEbtPQznWFZ7\/gflr90UIQAXU3AbNN5q5pK9QfkaoHKtteutS6KXQJnXTr9MQXy+eOPScebJYqvV5XAQlTAkTAJstmeXD6+XlujHISUgJp8FLo+VRW5ajw0b7U\/ZHEVyqkgOGDWKOymPzPzn2PUFzAIgAdnjn5l4qnNqa\/1qDim1Qanlb5O+d2ufcP7NZAwY60SCYnlgLZEEYPayzNV5hRw86N7sbdJ4z+vvKvGWgAJv0naYreOooE2fV4gOPUgZalft73klPl5ouWWmZnzz1NENupYSD\/P318jEzFNxIkagAGmHpDif30kt\/NvQmQ\/EfhDeFqtzRVN53g+Ov4Cim21ieFqpcJDTDtYuyfeBoZ691Nf6Nmg\/u1M9UtCUDQHYgh9wegltPyl32TzZB23qva5c8qroK1akx81IDuBBdv2YKYXXffPcAfebM1Px\/8\/6rx6Aa2urmidTIaFGMnFQwXx79Q==\\\",\\\"bucketName\\\":\\\"pilipa\\\",\\\"dir\\\":\\\"pilipa\/375\/7333\/2018-03-31\\\",\\\"regionId\\\":\\\"cn-beijing\\\"}\"}")
 ossCfg = JSON.parse(ossCfg.data)
-let newOssCfg = JSON.parse("{\"status\":true,\"errorcode\":\"\",\"message\":\"\",\"data\":\"{\\\"AccessKeyId\\\":\\\"STS.ExktwxNAfHFTuDdQe7jYpNuJC\\\",\\\"AccessKeySecret\\\":\\\"6SM4rH2tKY7jHFxAQNmFKVeSiYxPzjnu9nipAjjbyDSH\\\",\\\"SecurityToken\\\":\\\"CAISiwJ1q6Ft5B2yfSjIpLveP83Mo55H\/4S\/d2LVtWViZtZcobDhoTz2IHlNfHVsBeEbtPQznWFZ7\/gflr90UIQAXU3AbNN5q5pK9QfkaoHKtteutTypJTJkXTr9MQXy+eOPScebJYqvV5XAQlTAkTAJstmeXD6+XlujHISUgJp8FLo+VRW5ajw0b7U\/ZHEVyqkgOGDWKOymPzPzn2PUFzAIgAdnjn5l4qnNqa\/1qDim1Qanlb5O+d2ufcP7NZAwY60SCYnlgLZEEYPayzNV5hRw86N7sbdJ4z+vvKvGWgAJv0naYreOooE2fV4gOPUgZalft73klPl5ouWWmZnzz1NENupYSD\/P318jEzFNxIkagAGnltJKHhRGsKYnzxIXvNESsKZ5ehEwpxf4kcAUTE0m2YhdVx8iZqZtxKmVVXmE9M9DEkT3kPQxgV8rRE1d4OGludNmLmwN6pxoCd02duzdQ\/15yXPuDVd3zRiWDG397C0KMhDGZaLRpZEIIIQl4DF6OsHYxWS3NbWc8PtN9l3H2Q==\\\",\\\"bucketName\\\":\\\"pilipa\\\",\\\"dir\\\":\\\"pilipa\/375\/7333\/2018-03-31\\\"}\"}")
+let newOssCfg = JSON.parse("{\"status\":true,\"errorcode\":\"\",\"message\":\"\",\"data\":\"{\\\"AccessKeyId\\\":\\\"STS.HhisobVvcpLUd3bAoTz2KEsp9\\\",\\\"AccessKeySecret\\\":\\\"5f1KpoABRPLM7qcjttpHvEKfibcZgjBwutJYjpjLkdTA\\\",\\\"SecurityToken\\\":\\\"CAISiwJ1q6Ft5B2yfSjIqavcONXWu6lCx46+ZhXTpW8Bdr1nqrbb2zz2IHlNfHVsBeEbtPQznWFZ7\/gflr90UIQAXU3AbNN5q5pK9QfkaoHKtteutTe6SQ9nXTr9MQXy+eOPScebJYqvV5XAQlTAkTAJstmeXD6+XlujHISUgJp8FLo+VRW5ajw0b7U\/ZHEVyqkgOGDWKOymPzPzn2PUFzAIgAdnjn5l4qnNqa\/1qDim1Qanlb5O+d2ufcP7NZAwY60SCYnlgLZEEYPayzNV5hRw86N7sbdJ4z+vvKvGWgAJv0naYreOooE2fV4gOPUgZalft73klPl5ouWWmZnzz1NENupYSD\/P318jEzFNxIkagAEr4kBWeXzv42a2C34mUuw2r+nf9E0mQZUFMAtioaoBAGlIl8T\/\/e2oEqd286RMR16rAvKPYKgtie0Tr\/+4Y8h8bxw3ZHO0L9hdenq\/2pv6U8IOF6JQjSN99hGWcebzZG+oW4NAGhex0HZuzCfdZgUioDIiHQDM9ODvQ6z3Dd5pFw==\\\",\\\"bucketName\\\":\\\"pilipa\\\",\\\"dir\\\":\\\"pilipa\/375\/7333\/2018-03-31\\\",\\\"regionId\\\":\\\"cn-beijing\\\"}\"}")
 newOssCfg = JSON.parse(newOssCfg.data)
 export default class extends React.Component {
   public componentDidMount () {
@@ -21,8 +21,17 @@ export default class extends React.Component {
       callback: {
         url: "https://x-agent.i-counting.cn/api/v1/OSSCallBack.ashx",
         host: "x-agent.i-counting.cn",
-        body: "filename=${object}&size=${size}&mimeType=${mimeType}&height=${imageInfo.height}&width=${imageInfo.width}&receiptid=0&typeid=1&companyid=7048&userid=665&self=0&companycode=5a93be1a85effd0001e7f7d0&origanl=${file.name}",
-        contentType: "application/x-www-form-urlencoded"
+        body: "filename=${object}&etag=${etag}&size=${size}&mimeType=${mimeType}&height=${imageInfo.height}&width=${imageInfo.width}&receiptid=0&typeid=1&companyid=7048&userid=665&self=0&companycode=5a93be1a85effd0001e7f7d0",
+        contentType: "application/json"
+        // body: "filename=${object}&etag=${etag}&size=${size}&mimeType=${mimeType}&height=${imageInfo.height}&width=${imageInfo.width}&receiptid=${x:receiptid}&typeid=${x:typeid}&companyid=${x:companyid}&userid=${x:userid}&self=${x:self}&companycode=${x:companycode}",
+        // customValue: {
+        //   receiptid: "0",
+        //   typeid: "1",
+        //   companyid: "7048",
+        //   userid: "665",
+        //   self: "0",
+        //   companycode: "5a93be1a85effd0001e7f7d0"
+        // }
       }
     })
     uploader.on('error', () => {

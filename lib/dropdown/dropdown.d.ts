@@ -34,6 +34,7 @@ export default class  extends React.Component<MyProps, MyStates> {
     defaultPage: number;
     selectedIndex: number;
     seleted: boolean;
+    event: any;
     constructor(props: MyProps);
     componentWillReceiveProps(props: MyProps): void;
     componentDidMount(): void;

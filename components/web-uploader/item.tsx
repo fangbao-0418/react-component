@@ -49,6 +49,8 @@ export default class extends React.Component <Props, States> {
   public viewer: Viewer
   public isFinished: boolean = true
   public callback: any
+  public newConfig: P
+  public success: boolean = false
   public componentWillMount () {
     this.readFile()
     const { accessKeyId, accessKeySecret, stsToken, bucket, region } = this.props
@@ -73,14 +75,6 @@ export default class extends React.Component <Props, States> {
   public componentDidMount () {
     const $el = $(this.refs.item)
     const img = $(this.refs.img)
-    $el.hover(() => {
-      if ($el.find('.pilipa-web-uploader-imgage-uploading').length > 0) {
-        if (this.state.uploadStatus === 'pause') {
-
-        }
-        $el.find('.pilipa-web-uploader-image-operate').hide()
-      }
-    })
     if (!this.viewer) {
       this.viewer = new Viewer($(img)[0], {
       })
@@ -107,7 +101,6 @@ export default class extends React.Component <Props, States> {
         return $0
       })
       this.callback = Object.assign({}, callback, {body})
-      console.log(body, this.callback)
     }
   }
   public initStatus (cb?: () => void) {
@@ -122,7 +115,19 @@ export default class extends React.Component <Props, States> {
       }
     })
   }
-  public updateOss (options: P) {
+  public updateOss (options?: P) {
+    if (options) {
+      this.newConfig = options
+    } else {
+      options = this.newConfig || {
+        accessKeyId: this.props.accessKeyId,
+        accessKeySecret: this.props.accessKeySecret,
+        stsToken: this.props.stsToken,
+        bucket: this.props.bucket,
+        region: this.props.region,
+        dir: this.props.dir
+      }
+    }
     if (this.isFinished === false) {return}
     const { accessKeyId, accessKeySecret, stsToken, bucket, region, dir } = options
     this.store = OSS({
@@ -149,7 +154,6 @@ export default class extends React.Component <Props, States> {
     const nowTime = new Date().getTime().toString()
     str = md5([this.props.file.name, nowTime, str].join('||'))
     this.name = '/' + this.dir + '/' + str.toUpperCase() + '.' + suffix
-    console.log(this.name)
   }
   public readFile () {
     const reader: FileReader = new FileReader()
@@ -164,9 +168,11 @@ export default class extends React.Component <Props, States> {
     this.store.multipartUpload<{
       progress: (percentage: number, checkpoint: CheckPoint) => void,
       checkpoint?: CheckPoint
-      callback?: any
+      callback?: any,
+      timeout: number
     }, ClientPromise>(this.name, this.props.file, {
       progress: async (percentage, checkpoint) => {
+        percentage = percentage > 1 ? 1 : percentage
         this.setState({
           percentage
         })
@@ -174,47 +180,73 @@ export default class extends React.Component <Props, States> {
           index: this.props.index,
           percentage
         })
-        console.log(percentage, checkpoint, 'progress')
         if (checkpoint) {
+          if (percentage >= 1 && !this.success && checkpoint.uploadId) {
+            this.store.completeMultipartUpload<any>(this.name, checkpoint.uploadId, checkpoint.doneParts)
+            .then((res: any) => {
+              this.handleUploadSuccess(res)
+              return res
+            })
+            .catch((err: any) => {
+              this.handleUploadError(err)
+            })
+          }
           this.tempCheckpoint = checkpoint
           this.uploadId = checkpoint.uploadId
         }
       },
       checkpoint: this.tempCheckpoint,
-      callback: this.callback
+      callback: this.callback,
+      timeout: 10000
     }).then((res) => {
-      console.log(res, 'success')
-      this.setState({
-        uploadStatus: 'success'
-      })
-      bus.trigger('end-upload', {
-        index: this.props.index,
-        status: 'success',
-        url: res.res.requestUrls[0]
-      })
+      this.handleUploadSuccess(res)
     }).catch((err) => {
-      bus.trigger('error', err)
-      if (typeof err === 'object' && err.name === 'cancel') {
-        this.setState({
-          uploadStatus: 'pause'
-        })
-      } else {
-        this.setState({
-          uploadStatus: 'failed'
-        })
-        bus.trigger('end-upload', {
-          index: this.props.index,
-          status: 'failed'
-        })
-      }
+      this.handleUploadError(err)
     }).finally(() => {
       this.setState({
         uploading: false
       })
     })
   }
+  public handleUploadSuccess (res: any) {
+    console.log(res, 'success')
+    this.success = true
+    this.setState({
+      uploadStatus: 'success'
+    })
+    bus.trigger('end-upload', {
+      index: this.props.index,
+      status: 'success',
+      url: res.res.requestUrls[0]
+    })
+  }
+  public handleUploadError (err: any) {
+    console.log(err, err.code, this.success)
+    if (this.success) {
+      return
+    }
+    // console.log(err, 'error')
+    if (typeof err === 'object' && err.name === 'cancel') {
+      this.setState({
+        uploadStatus: 'pause'
+      })
+    } else {
+      switch (err.status) {
+      case 403:
+        this.setState({
+          uploadStatus: 'failed'
+        })
+        bus.trigger('error', err)
+        bus.trigger('end-upload', {
+          index: this.props.index,
+          status: 'failed'
+        })
+        break
+      }
+    }
+  }
   public handleUpload (status: UploadStatus) {
-    if (this.state.uploadStatus === 'success') {
+    if (this.success) {
       return
     }
     switch (status) {
@@ -235,6 +267,7 @@ export default class extends React.Component <Props, States> {
       this.setState({
         uploading: true
       })
+      this.updateOss()
       this.fileUpload()
       break
     }
@@ -325,7 +358,15 @@ export default class extends React.Component <Props, States> {
             onClick={this.handleOpearte.bind(this, 'zoom-in')}
           >
           </i>
-          <i className='fa fa-trash-o' aria-hidden='true' onClick={this.handleOpearte.bind(this, 'delete')}></i>
+          {
+            !this.success &&
+            <i
+              className='fa fa-trash-o'
+              aria-hidden='true'
+              onClick={this.handleOpearte.bind(this, 'delete')}
+            >
+            </i>
+          }
         </div>
         <img src={this.state.src} ref='img' alt={this.props.file.name}/>
       </li>

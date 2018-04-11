@@ -36,3 +36,6 @@ define(['jquery', 'react', 'react-dom', 'viewerjs', 'ali-oss'], ($, React, React
 ### 1.1.2  
   &nbsp;&nbsp; `2018-4-9`
   - webuploader 添加callback #15
+### 1.1.3
+  &nbsp;&nbsp; `2018-4-11`
+  - 优化notification，鼠标划过暂停消失

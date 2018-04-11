@@ -24,7 +24,7 @@ export default class extends React.Component {
   }
   render () {
     return (
-      <div>
+      <div style={{height: '1000px'}}>
         <DropDown
           title='测试数据55'
           style={{float: 'left', marginRight: '20px'}}

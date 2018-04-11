@@ -9,7 +9,7 @@ type T = 'success' | 'error' | 'warning'
 let defaultOptions = {
   title: '系统提示',
   message: '暂无信息',
-  duration: 4500
+  duration: 450000
 }
 export default {
   $el: $('<div class="pilipa-notification"></div>'),
@@ -33,18 +33,26 @@ export default {
     if ($('body').find(this.$el).length === 0) {
       $('body').append(this.$el)
     }
-    setTimeout(() => {
-      this.leave(template)
-    }, this.duration)
-    this.initEvent()
-    setTimeout(() => {
-      this.leave(template)
-    }, this.duration - 240)
+    this.initEvent(template)
   },
-  initEvent () {
-    this.$el.find('.pilipa-notification-close').off('click').on('click', (event: any) => {
-      const template = $(event.target).parent()
+  initEvent (template: any) {
+    const showTime = new Date().getTime()
+    let t = setTimeout(() => {
+      this.leave(template, this.n)
+    }, this.duration - 240)
+    template.find('.pilipa-notification-close').off('click').on('click', (event: any) => {
+      // const template = $(event.target).parent()
       this.leave(template)
+    })
+    template.hover(() => {
+      const nowTime = new Date().getTime()
+      this.usedTime = nowTime - showTime
+      clearTimeout(t)
+    }, () => {
+      const time = this.duration - this.usedTime
+      t = setTimeout(() => {
+        this.leave(template)
+      }, time)
     })
   },
   leave (template: JQuery) {
@@ -70,10 +78,12 @@ export default {
         </div>
         <div class="pilipa-notification-close">×</div>
         <div class="pilipa-notification-content">
-          <div class="pilipa-notification-title">${options.title || defaultOptions.title}</div>
-          <div class="pilipa-notification-message">
-            ${options.message}
+          <div class="pilipa-notification-title" title="${options.title || defaultOptions.title}">
+            ${options.title || defaultOptions.title}
           </div>
+          <p class="pilipa-notification-message" title="${options.message}">
+            ${options.message}
+          </p>
         </div>
       </div>
     `

@@ -402,7 +402,12 @@ export default class extends React.Component <Props, States> {
             </i>
           }
         </div>
-        <img src={this.state.src} ref='img' alt={this.props.file.name}/>
+        <img
+          src={this.state.src}
+          ref='img'
+          alt={this.props.file.name}
+          style={{display: this.state.src ? 'initial' : 'none'}}
+        />
       </li>
     )
   }

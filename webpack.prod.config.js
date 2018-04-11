@@ -127,7 +127,9 @@ module.exports = [
       extractCommon,
       new UglifyJsPlugin({
         uglifyOptions: {
-          compress: true
+          compress: {
+            drop_console: true
+          }
         }
       }),
       new webpack.NoEmitOnErrorsPlugin(),

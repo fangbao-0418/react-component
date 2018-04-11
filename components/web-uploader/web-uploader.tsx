@@ -53,7 +53,7 @@ class WebUploader extends React.Component <Props, States> {
     continue: '继续上传',
     finish: '上传完成'
   }
-  public maxUploadNum: number = this.props.maxUploadNum || 300
+  public maxUploadNum: number = this.props.maxUploadNum || 3
   public uploadTarget = this.props.uploadTarget || '图片'
   public state = {
     initShow: this.files.length === 0,
@@ -127,11 +127,11 @@ class WebUploader extends React.Component <Props, States> {
     file.trigger('click')
   }
   public toVerify () {
-    if (this.files.length >= this.maxUploadNum) {
-      notification.warning({
-        message: `上传文件数目不能超过${this.maxUploadNum}张`
-      })
-      this.files.splice(this.maxUploadNum)
+    if (this.files.length > this.maxUploadNum) {
+      // notification.warning({
+      //   message: `上传文件数目超过${this.maxUploadNum}张，可能会存在卡顿！`
+      // })
+      // this.files.splice(this.maxUploadNum)
     }
   }
   // 过滤文件
@@ -187,7 +187,9 @@ class WebUploader extends React.Component <Props, States> {
           点击选择{this.uploadTarget}
         </div>
         <p className=''>
-          或将{this.uploadTarget}拖到这里，单次最多可选{this.maxUploadNum}张，仅支持jpg、png、gif类型的文件
+          或将{this.uploadTarget}拖到这里，
+          {/* 单次推荐最多选{this.maxUploadNum}张， */}
+          仅支持jpg、png、gif类型的文件
         </p>
       </div>
     )
@@ -377,6 +379,7 @@ class WebUploader extends React.Component <Props, States> {
     bus.trigger('close')
   }
   public toFold () {
+    bus.trigger('fold')
     $(`.pilia-web-uploader-menu-${WebUploader.id}`).remove()
     const $uploader = $(this.refs.uploader)
     const $wrap = $uploader.parents('.pilipa-modal-wrap')
@@ -393,6 +396,7 @@ class WebUploader extends React.Component <Props, States> {
       $menu.addClass('pilipa-web-uploader-menu-unfold pilipa-web-uploader-menu-active')
     }, 300)
     $menu.click(() => {
+      bus.trigger('unfold')
       $menu.removeClass('pilipa-web-uploader-menu-unfold pilipa-web-uploader-menu-active')
       $menu.addClass('pilipa-web-uploader-menu-fold pilipa-web-uploader-menu-active')
       setTimeout(() => {

@@ -39,3 +39,7 @@ define(['jquery', 'react', 'react-dom', 'viewerjs', 'ali-oss'], ($, React, React
 ### 1.1.3
   &nbsp;&nbsp; `2018-4-11`
   - 优化notification，鼠标划过暂停消失
+### 1.1.4
+  &nbsp;&nbsp; `2018-4-12`
+  - notification持续时间调整4500ms
+

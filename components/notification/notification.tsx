@@ -9,7 +9,7 @@ type T = 'success' | 'error' | 'warning'
 let defaultOptions = {
   title: '系统提示',
   message: '暂无信息',
-  duration: 450000
+  duration: 4500
 }
 export default {
   $el: $('<div class="pilipa-notification"></div>'),

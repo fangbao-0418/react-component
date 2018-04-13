@@ -144,7 +144,7 @@ export default class extends React.Component<MyProps, MyStates> {
         capital: getCapital(item[title || 'title']) || ['']
       }
       if (this.props.title === item[title || 'title']) {
-        this.defaultPage = index === 0 ? 1 : Math.ceil(index / this.pageNum)
+        this.defaultPage = index === 0 ? 1 : Math.ceil(index + 1 / this.pageNum)
         this.selectedIndex = index
       }
       this.allData[index] = newItem
@@ -157,7 +157,7 @@ export default class extends React.Component<MyProps, MyStates> {
     this.state.dataTmp.map((item, index) => {
       if (this.state.title === item.title) {
         this.selectedIndex = index
-        this.defaultPage = this.selectedIndex <= 0 ? 1 : Math.ceil(this.selectedIndex / this.pageNum)
+        this.defaultPage = this.selectedIndex <= 0 ? 1 : Math.ceil(this.selectedIndex + 1 / this.pageNum)
         this.setState({
           data: this.state.dataTmp.slice(0, this.defaultPage * this.pageNum),
           selectedIndex: index
@@ -169,7 +169,7 @@ export default class extends React.Component<MyProps, MyStates> {
       $items.scrollTop(0)
       return
     }
-    this.defaultPage = this.selectedIndex <= 0 ? 1 : Math.ceil(this.selectedIndex / this.pageNum)
+    this.defaultPage = this.selectedIndex <= 0 ? 1 : Math.ceil(this.selectedIndex + 1 / this.pageNum)
     // this.setState({
     //   data: this.allData.slice(0, this.defaultPage * this.pageNum),
     //   dataTmp: this.allData
@@ -255,7 +255,7 @@ export default class extends React.Component<MyProps, MyStates> {
       this.t = setTimeout(() => {
         $(results).removeClass('custom-slide-up-leave')
         $(results).addClass('hidden')
-        this.defaultPage = this.selectedIndex <= 0 ? 1 : Math.ceil(this.selectedIndex / this.pageNum)
+        this.defaultPage = this.selectedIndex <= 0 ? 1 : Math.ceil(this.selectedIndex + 1 / this.pageNum)
         this.setState({
           visible: false,
           selectedIndex: this.selectedIndex
@@ -274,7 +274,7 @@ export default class extends React.Component<MyProps, MyStates> {
       title: item.title,
       selectedIndex: index
     })
-    this.defaultPage = index === 0 ? 1 : Math.ceil(index / this.pageNum)
+    this.defaultPage = index === 0 ? 1 : Math.ceil(index + 1 / this.pageNum)
     this.handleLeave()
     if (callBack) {
       setTimeout(() => {

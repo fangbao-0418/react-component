@@ -31,8 +31,9 @@ export interface States {
   percentage: number
   successNo: number
   failedNo: number
-  newNo: number, // 新增数
+  newNo: number // 新增数
   sumSize: string
+  disabled: boolean
 }
 export type UploadStatus = 'start' | 'pause' | 'continue' | 'finish'
 @events()
@@ -63,7 +64,8 @@ class WebUploader extends React.Component <Props, States> {
     successNo: 0,
     failedNo: 0,
     newNo: 0,
-    sumSize: 'OKb'
+    sumSize: 'OKb',
+    disabled: false
   }
   public componentWillMount () {
     if (!FileReader) {
@@ -235,6 +237,17 @@ class WebUploader extends React.Component <Props, States> {
   }
   // 处理上传
   public handleUpload () {
+    if (this.state.disabled) {
+      return
+    }
+    this.setState({
+      disabled: true
+    })
+    setTimeout(() => {
+      this.setState({
+        disabled: false
+      })
+    }, 500)
     bus.trigger('handle-upload', this.state.uploadStatus)
     let status = 'start'
     switch (this.state.uploadStatus) {
@@ -481,7 +494,12 @@ class WebUploader extends React.Component <Props, States> {
                   继续添加
                 </div>
                 <div
-                  className='pilipa-web-uploader-btn-primary'
+                  className={classNames(
+                    'pilipa-web-uploader-btn-primary',
+                    {
+                      disabled: this.state.disabled
+                    }
+                  )}
                   onClick={this.handleUpload.bind(this)}
                 >
                   {this.allUploadStatus[this.state.uploadStatus]}

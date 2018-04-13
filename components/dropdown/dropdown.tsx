@@ -90,6 +90,9 @@ export default class extends React.Component<MyProps, MyStates> {
     const keyCode = event.keyCode
     let { selectedIndex } = this.state
     const $items = $dropdowm.find('.results .items')
+    if ($items.length === 0 || $items.find('li').length === 0) {
+      return
+    }
     const scrollTop = $items.scrollTop()
     const itemsHeight = $items.height()
     let liOffsetTop = 0
@@ -142,7 +145,7 @@ export default class extends React.Component<MyProps, MyStates> {
         capital: getCapital(item[title || 'title']) || ['']
       }
       if (this.props.title === item[title || 'title']) {
-        this.defaultPage = Math.ceil(index / this.pageNum)
+        this.defaultPage = index === 0 ? 1 : Math.ceil(index / this.pageNum)
         this.selectedIndex = index
       }
       this.allData[index] = newItem
@@ -152,6 +155,9 @@ export default class extends React.Component<MyProps, MyStates> {
   public scrollToSelectedPos () {
     const $dropdowm = $(this.refs.dropdown)
     const $items = $dropdowm.find('.results .items')
+    if ($items.find('li').length === 0) {
+      return
+    }
     console.log(this.selectedIndex, 's')
     const scrollTop = $items.find('li').eq(this.selectedIndex)[0].offsetTop
     console.log($items.find('li').eq(this.selectedIndex)[0].offsetTop)

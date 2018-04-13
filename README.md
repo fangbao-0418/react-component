@@ -42,4 +42,7 @@ define(['jquery', 'react', 'react-dom', 'viewerjs', 'ali-oss'], ($, React, React
 ### 1.1.4
   &nbsp;&nbsp; `2018-4-12`
   - notification持续时间调整4500ms
+### 1.1.4-alpha.1
+  &nbsp;&nbsp; `2018-4-12`
+  - dropdown 修复没有数据报错
 

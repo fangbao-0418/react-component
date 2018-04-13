@@ -1,6 +1,6 @@
 {
   "name": "pilipa",
-  "version": "1.1.4",
+  "version": "1.1.4-alpha.4",
   "description": "噼里啪前端组件，基于react。",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -20,7 +20,7 @@
     "classnames": "^2.2.5"
   },
   "devDependencies": {
-    "@types/ali-oss": "^1.0.0",
+    "@types/ali-oss": "^1.0.1",
     "@types/classnames": "^2.2.3",
     "@types/jquery": "^3.2.18",
     "@types/react-dom": "16.0.2",

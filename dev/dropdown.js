@@ -28,7 +28,7 @@ export default class extends React.Component {
         <DropDown
           title='测试数据55'
           style={{float: 'left', marginRight: '20px'}}
-          data={this.data}
+          data={[]}
           callBack={(item) => {
             console.log(item)
           }}

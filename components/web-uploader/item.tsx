@@ -42,27 +42,26 @@ export default class extends React.Component <Props, States> {
     uploading: false
   }
   public tempCheckpoint: CheckPoint = null
-  public store: Client
+  public ossOpts: ConfigProps = {
+    accessKeyId: this.props.accessKeyId,
+    accessKeySecret: this.props.accessKeySecret,
+    stsToken: this.props.stsToken,
+    bucket: this.props.bucket,
+    region: this.props.region
+  }
+  public store: Client[] = []
+  public storeId: number = 0
   public name = ''
   public uploadId = ''
   public dir = ''
   public viewer: Viewer
   public isDestroy: boolean = false
   public callback: any
-  public newConfig: P
   public success: boolean = false
   public completeMultipartUpload: any
   public componentWillMount () {
     this.readFile()
-    const { accessKeyId, accessKeySecret, stsToken, bucket, region } = this.props
     this.handleCallBack()
-    this.store = OSS({
-      accessKeyId,
-      accessKeySecret,
-      stsToken,
-      bucket,
-      region
-    })
     this.dir = this.props.dir
     bus.on<UploadStatus>('handle-upload', (status) => {
       if (this.isDestroy || this.success) {
@@ -72,7 +71,7 @@ export default class extends React.Component <Props, States> {
         this.handleUpload(status)
       })
     })
-    bus.on('oss-update', this.updateOss.bind(this))
+    bus.on('oss-update', this.updateOssOpts.bind(this))
     this.createFileName()
   }
   public componentDidMount () {
@@ -118,31 +117,13 @@ export default class extends React.Component <Props, States> {
       }
     })
   }
-  public updateOss (options?: P) {
+  public updateOssOpts (options?: P) {
     if (this.isDestroy || this.success) {
       return
     }
-    if (options) {
-      this.newConfig = options
-    } else {
-      options = this.newConfig || {
-        accessKeyId: this.props.accessKeyId,
-        accessKeySecret: this.props.accessKeySecret,
-        stsToken: this.props.stsToken,
-        bucket: this.props.bucket,
-        region: this.props.region,
-        dir: this.props.dir
-      }
-    }
-    const { accessKeyId, accessKeySecret, stsToken, bucket, region, dir } = options
-    this.store = OSS({
-      accessKeyId,
-      accessKeySecret,
-      stsToken,
-      bucket,
-      region
-    })
-    this.dir = dir
+    this.dir = options.dir
+    delete options.dir
+    this.ossOpts = options
   }
   public createFileName () {
     const pattern = 'ABCDEFGHIJKLMNOPQRESUVWXYZabcdefghijklmnopqresuvwxyz1234567890'
@@ -172,13 +153,15 @@ export default class extends React.Component <Props, States> {
     if (this.success) {
       return
     }
-    this.store.multipartUpload<{
+    console.log(this.props.file, 'file')
+    this.store[this.storeId].multipartUpload<{
       progress: (percentage: number, checkpoint: CheckPoint) => void,
       checkpoint?: CheckPoint
       callback?: any,
       timeout: number
     }, ClientPromise>(this.name, this.props.file, {
       progress: async (percentage, checkpoint) => {
+        console.log(percentage, checkpoint, 'progress')
         percentage = percentage > 1 ? 1 : percentage
         this.setState({
           percentage
@@ -188,17 +171,18 @@ export default class extends React.Component <Props, States> {
           percentage
         })
         if (checkpoint) {
-          if (percentage === 1 && !this.success && checkpoint.uploadId && !this.completeMultipartUpload) {
-            this.completeMultipartUpload = true
-            this.store.completeMultipartUpload<any>(this.name, checkpoint.uploadId, checkpoint.doneParts)
-            .then((res: any) => {
-              this.handleUploadSuccess(res)
-              return res
-            })
-            .catch((err: any) => {
-              this.handleUploadError(err)
-            })
-          }
+          // if (percentage === 1 && !this.success && checkpoint.uploadId && !this.completeMultipartUpload) {
+          //   this.completeMultipartUpload = true
+          //   this.store[this.storeId]
+          //   .completeMultipartUpload<any>(this.name, checkpoint.uploadId, checkpoint.doneParts)
+          //   .then((res: any) => {
+          //     this.handleUploadSuccess(res)
+          //     return res
+          //   })
+          //   .catch((err: any) => {
+          //     this.handleUploadError(err)
+          //   })
+          // }
           this.tempCheckpoint = checkpoint
           this.uploadId = checkpoint.uploadId
         }
@@ -211,19 +195,20 @@ export default class extends React.Component <Props, States> {
     }).catch((err) => {
       this.handleUploadError(err)
     }).finally(() => {
-      this.setState({
-        uploading: false
-      })
+      console.log('finally')
     })
   }
   public handleUploadSuccess (res: any) {
+    console.log(res, 'success')
+    this.tempCheckpoint = null
     // console.log(res, this.props.index, 'success')
     if (this.isDestroy) {
       return
     }
     this.success = true
     this.setState({
-      uploadStatus: 'success'
+      uploadStatus: 'success',
+      uploading: false
     })
     bus.trigger('end-upload', {
       index: this.props.index,
@@ -232,12 +217,15 @@ export default class extends React.Component <Props, States> {
     })
   }
   public handleUploadError (err: any) {
-    // console.log(err, err.code, this.props.index, this.state.percentage, this.completeMultipartUpload, this.success)
+    console.log(err, err.code, this.props.index, this.state.percentage, this.completeMultipartUpload, this.success)
     // console.log(err, 'error')
+    if (this.success || this.isDestroy) {
+      return
+    }
+    this.setState({
+      uploading: false
+    })
     if (typeof err === 'object' && err.name === 'cancel') {
-      if (this.success || this.isDestroy) {
-        return
-      }
       this.setState({
         uploadStatus: 'pause'
       })
@@ -256,9 +244,8 @@ export default class extends React.Component <Props, States> {
           status: 'failed'
         })
         break
-      case 404:
-        this.store.get<any>(this.name).then((res: any) => {
-          this.success = true
+      default:
+        this.store[this.storeId].get<any>(this.name).then((res: any) => {
           this.handleUploadSuccess(res)
         }).catch((err2: any) => {
           if (this.success || this.isDestroy) {
@@ -279,12 +266,25 @@ export default class extends React.Component <Props, States> {
       }
     }
   }
+  public setOss () {
+    this.storeId += 1
+    const { accessKeyId, accessKeySecret, stsToken, bucket, region } = this.ossOpts
+    this.store[this.storeId] = OSS({
+      accessKeyId,
+      accessKeySecret,
+      stsToken,
+      bucket,
+      region
+    })
+    console.log(this.store, 'store')
+  }
   public handleUpload (status: UploadStatus) {
     if (this.success) {
       return
     }
     switch (status) {
     case 'start':
+      this.setOss()
       this.setState({
         uploading: true
       })
@@ -295,13 +295,13 @@ export default class extends React.Component <Props, States> {
         uploadStatus: 'pause',
         uploading: false
       })
-      this.store.cancel()
+      this.store[this.storeId].cancel()
       break
     case 'continue':
       this.setState({
         uploading: true
       })
-      this.updateOss()
+      this.setOss()
       this.fileUpload()
       break
     }
@@ -339,10 +339,10 @@ export default class extends React.Component <Props, States> {
       // this.store.delete(this.name)
       break
     case 'failed':
-      this.store.abortMultipartUpload(this.name, this.uploadId)
+      this.store[this.storeId].abortMultipartUpload(this.name, this.uploadId)
       break
     case 'pause':
-      this.store.abortMultipartUpload(this.name, this.uploadId)
+      this.store[this.storeId].abortMultipartUpload(this.name, this.uploadId)
       break
     }
   }

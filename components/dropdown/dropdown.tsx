@@ -35,6 +35,7 @@ export default class extends React.Component<MyProps, MyStates> {
   public selectedIndex = -1
   public seleted = false
   public event: any
+  public filterVal: string = ''
   public constructor (props: MyProps) {
     super(props)
     this.handleAllData(this.props.data)
@@ -50,9 +51,10 @@ export default class extends React.Component<MyProps, MyStates> {
   public componentWillReceiveProps (props: MyProps) {
     if (props.data) {
       this.handleAllData(props.data)
+      const res = this.filterData()
       this.setState({
-        data: this.allData.slice(0, this.pageNum * this.defaultPage),
-        dataTmp: this.allData
+        data: res.slice(0, this.pageNum * this.defaultPage),
+        dataTmp: res
       })
     }
   }
@@ -278,17 +280,26 @@ export default class extends React.Component<MyProps, MyStates> {
       }, 301)
     }
   }
-  public handleChange (e: any) {
-    const $items = $(this.refs.results).find('.items')
-    const filterVal = e.target.value
+  public filterData () {
     const { allData } = this
-    const value: string = $(this.refs.input).val().toString()
-    const pattern = new RegExp(value, 'i')
+    if (this.filterVal === '') {
+      return allData
+    }
+    const pattern = new RegExp(this.filterVal, 'i')
     const res = allData.filter((item: T, index): boolean => {
       if (pattern.test(item.title) || pattern.test(item.capital.join(','))) {
         return true
       }
     })
+    return res || []
+  }
+  public handleChange (e: any) {
+    const $items = $(this.refs.results).find('.items')
+    this.filterVal = e.target.value
+    const { allData } = this
+    const value: string = $(this.refs.input).val().toString()
+    const pattern = new RegExp(value, 'i')
+    const res = this.filterData()
     $items.scrollTop(0)
     res.map((item, index) => {
       if (this.state.title === item.title) {
@@ -301,7 +312,7 @@ export default class extends React.Component<MyProps, MyStates> {
       data: res.slice(0, this.pageNum),
       dataTmp: res,
       selectedIndex: -1,
-      filterVal
+      filterVal: this.filterVal
     })
   }
   public onMouseEnter (key: number) {

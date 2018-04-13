@@ -70,12 +70,12 @@ class AutoComplete extends React.Component<MyProps, MyStates> {
     const $items = $results.find('.items')
     const $lis = $results.find('.items li')
     const keyCode = event.keyCode
-    const { dataTmp } = this.state
+    const { data } = this.state
     let { selectedIndex } = this.state
     let liOffsetTop = 0
     const scrollTop = $items.scrollTop()
     const itemsHeight = $items.height()
-    if ($lis.length === 0) {
+    if ($lis.length === 0 || $lis.eq(selectedIndex).length === 0) {
       return
     }
     switch (keyCode) {
@@ -98,7 +98,7 @@ class AutoComplete extends React.Component<MyProps, MyStates> {
     // ↓
     case 40:
       event.preventDefault()
-      selectedIndex = selectedIndex >= dataTmp.length - 1 ? dataTmp.length - 1 : selectedIndex + 1
+      selectedIndex = selectedIndex >= data.length - 1 ? data.length - 1 : selectedIndex + 1
       liOffsetTop = $lis.eq(selectedIndex)[0].offsetTop
       if (scrollTop + itemsHeight - $lis.eq(selectedIndex).height() < liOffsetTop) {
         $items.scrollTop(scrollTop + $lis.eq(selectedIndex)[0].clientHeight)
@@ -125,8 +125,10 @@ class AutoComplete extends React.Component<MyProps, MyStates> {
     })
   }
   public searchChange () {
+    const $items = $(this.refs.results).find('.items')
     const el = $(this.refs.input)
     const value: string = el.val().toString() || ''
+    $items.scrollTop(0)
     if (!value) {
       this.setState({
         visible: false
@@ -149,7 +151,8 @@ class AutoComplete extends React.Component<MyProps, MyStates> {
       data: res.slice(0, this.pageNum),
       dataTmp: res,
       visible: true,
-      page: 1
+      page: 1,
+      selectedIndex: -1
     }, () => {
       this.listenScroll()
       const results = this.refs.results

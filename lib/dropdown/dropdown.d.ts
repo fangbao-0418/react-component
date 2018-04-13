@@ -23,8 +23,8 @@ export interface MyStates {
     data: T[];
     dataTmp: T[];
     title?: string;
-    page: number;
     selectedIndex: number;
+    filterVal: string;
 }
 export default class  extends React.Component<MyProps, MyStates> {
     pageNum: number;
@@ -43,12 +43,13 @@ export default class  extends React.Component<MyProps, MyStates> {
     handleAllData(data: any[]): void;
     scrollToSelectedPos(): void;
     handleEnter(): void;
+    onItemScroll(): void;
     handleLeave(): void;
     handleClick(item: {
         key: number;
         title: string;
     }, index: number): void;
-    handleChange(): void;
+    handleChange(e: any): void;
     onMouseEnter(key: number): void;
     render(): JSX.Element;
 }

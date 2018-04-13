@@ -35,7 +35,7 @@ export default class extends React.Component {
           filter
         />
         <DropDown
-          title='测试数据'
+          title='测试数据1'
           style={{float: 'left'}}
           data={this.data}
           callBack={(item) => {

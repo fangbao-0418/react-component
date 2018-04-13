@@ -95,12 +95,6 @@ agent-base@4, agent-base@^4.1.0, agent-base@^4.2.0:
   dependencies:
     es6-promisify "^5.0.0"
 
-agent-base@~4.1.0:
-  version "4.1.2"
-  resolved "http://registry.npm.taobao.org/agent-base/download/agent-base-4.1.2.tgz#80fa6cde440f4dcf9af2617cf246099b5d99f0c8"
-  dependencies:
-    es6-promisify "^5.0.0"
-
 agentkeepalive@^2.1.1:
   version "2.2.0"
   resolved "http://registry.npm.taobao.org/agentkeepalive/download/agentkeepalive-2.2.0.tgz#c5d1bd4b129008f1163f236f86e5faea2026e2ef"
@@ -5616,8 +5610,8 @@ prop-types@^15.6.0:
     object-assign "^4.1.1"
 
 proxy-agent@^2.1.0:
-  version "2.3.0"
-  resolved "http://registry.npm.taobao.org/proxy-agent/download/proxy-agent-2.3.0.tgz#5d6508c91717faf99c21ee750cc813ba49af1229"
+  version "2.3.1"
+  resolved "http://registry.npm.taobao.org/proxy-agent/download/proxy-agent-2.3.1.tgz#3d49d863d46cf5f37ca8394848346ea02373eac6"
   dependencies:
     agent-base "^4.2.0"
     debug "^3.1.0"
@@ -5626,7 +5620,7 @@ proxy-agent@^2.1.0:
     lru-cache "^4.1.2"
     pac-proxy-agent "^2.0.1"
     proxy-from-env "^1.0.0"
-    socks-proxy-agent "^4.0.0"
+    socks-proxy-agent "^3.0.0"
 
 proxy-from-env@^1.0.0:
   version "1.0.0"
@@ -6253,10 +6247,6 @@ smart-buffer@^1.0.13:
   version "1.1.15"
   resolved "http://registry.npm.taobao.org/smart-buffer/download/smart-buffer-1.1.15.tgz#7f114b5b65fab3e2a35aa775bb12f0d1c649bf16"
 
-smart-buffer@^4.0.1:
-  version "4.0.1"
-  resolved "http://registry.npm.taobao.org/smart-buffer/download/smart-buffer-4.0.1.tgz#07ea1ca8d4db24eb4cac86537d7d18995221ace3"
-
 snapdragon-node@^2.0.1:
   version "2.1.1"
   resolved "http://registry.npm.taobao.org/snapdragon-node/download/snapdragon-node-2.1.1.tgz#6c175f86ff14bdb0724563e8f3c1b021a286853b"
@@ -6297,26 +6287,12 @@ socks-proxy-agent@^3.0.0:
     agent-base "^4.1.0"
     socks "^1.1.10"
 
-socks-proxy-agent@^4.0.0:
-  version "4.0.0"
-  resolved "http://registry.npm.taobao.org/socks-proxy-agent/download/socks-proxy-agent-4.0.0.tgz#e85e713bf30d5412364fbbcb6d628ff3437a41c0"
-  dependencies:
-    agent-base "~4.1.0"
-    socks "~2.1.6"
-
 socks@^1.1.10:
   version "1.1.10"
   resolved "http://registry.npm.taobao.org/socks/download/socks-1.1.10.tgz#5b8b7fc7c8f341c53ed056e929b7bf4de8ba7b5a"
   dependencies:
     ip "^1.1.4"
     smart-buffer "^1.0.13"
-
-socks@~2.1.6:
-  version "2.1.6"
-  resolved "http://registry.npm.taobao.org/socks/download/socks-2.1.6.tgz#684d98e137bdba484f3f4b13bacecb9fa5acc597"
-  dependencies:
-    ip "^1.1.5"
-    smart-buffer "^4.0.1"
 
 sort-keys@^1.0.0:
   version "1.1.2"

@@ -23,8 +23,8 @@ export interface MyStates {
   data: T[]
   dataTmp: T[]
   title?: string
-  page: number
   selectedIndex: number
+  filterVal: string
 }
 export default class extends React.Component<MyProps, MyStates> {
   public pageNum = 20
@@ -32,26 +32,26 @@ export default class extends React.Component<MyProps, MyStates> {
   public allData: T[]
   public defaultCls = 'pilipa-dropdown'
   public defaultPage = 1
-  public selectedIndex = 0
+  public selectedIndex = -1
   public seleted = false
   public event: any
   public constructor (props: MyProps) {
     super(props)
     this.handleAllData(this.props.data)
     this.state = {
-      page: this.defaultPage,
       visible: false,
       title: this.props.title || '',
       data: this.allData.slice(0, this.pageNum * this.defaultPage),
       dataTmp: this.allData,
-      selectedIndex: this.selectedIndex
+      selectedIndex: this.selectedIndex,
+      filterVal: ''
     }
   }
   public componentWillReceiveProps (props: MyProps) {
     if (props.data) {
       this.handleAllData(props.data)
       this.setState({
-        data: this.allData.slice(0, this.pageNum),
+        data: this.allData.slice(0, this.pageNum * this.defaultPage),
         dataTmp: this.allData
       })
     }
@@ -92,8 +92,8 @@ export default class extends React.Component<MyProps, MyStates> {
     let { selectedIndex } = this.state
     const $items = $dropdowm.find('.results .items')
     const $lis = $items.find('li')
-    const { dataTmp } = this.state
-    if ($lis.length === 0) {
+    const { data } = this.state
+    if ($lis.length === 0 || $lis.eq(selectedIndex).length === 0) {
       return
     }
     const scrollTop = $items.scrollTop()
@@ -119,7 +119,7 @@ export default class extends React.Component<MyProps, MyStates> {
     // ↓
     case 40:
       event.preventDefault()
-      selectedIndex = selectedIndex >= dataTmp.length - 1 ? dataTmp.length - 1 : selectedIndex + 1
+      selectedIndex = selectedIndex >= data.length - 1 ? data.length - 1 : selectedIndex + 1
       liOffsetTop = $lis.eq(selectedIndex)[0].offsetTop
       if (scrollTop + itemsHeight - $lis.eq(selectedIndex).height() < liOffsetTop) {
         $items.scrollTop(scrollTop + $lis.eq(selectedIndex)[0].clientHeight)
@@ -152,13 +152,33 @@ export default class extends React.Component<MyProps, MyStates> {
   public scrollToSelectedPos () {
     const $dropdowm = $(this.refs.dropdown)
     const $items = $dropdowm.find('.results .items')
+    this.state.dataTmp.map((item, index) => {
+      if (this.state.title === item.title) {
+        this.selectedIndex = index
+      }
+    })
+    if (this.selectedIndex < 0) {
+      $items.scrollTop(0)
+      return
+    }
+    this.defaultPage = this.selectedIndex <= 0 ? 1 : Math.ceil(this.selectedIndex / this.pageNum)
+    // this.setState({
+    //   data: this.allData.slice(0, this.defaultPage * this.pageNum),
+    //   dataTmp: this.allData
+    // })
     if ($items.find('li').length === 0) {
       return
     }
-    console.log(this.selectedIndex, 's')
-    const scrollTop = $items.find('li').eq(this.selectedIndex)[0].offsetTop
-    console.log($items.find('li').eq(this.selectedIndex)[0].offsetTop)
-    $items.scrollTop(scrollTop - $items.find('li').eq(this.selectedIndex)[0].clientHeight * 3)
+    try {
+      const scrollTop = $items.find('li').eq(this.selectedIndex)[0].offsetTop
+      console.log($items.find('li').eq(this.selectedIndex)[0].offsetTop)
+      $items.scrollTop(scrollTop - $items.find('li').eq(this.selectedIndex)[0].clientHeight * 3)
+    } catch (e) {
+      this.selectedIndex = 0
+      const scrollTop = $items.find('li').eq(this.selectedIndex)[0].offsetTop
+      console.log($items.find('li').eq(this.selectedIndex)[0].offsetTop)
+      $items.scrollTop(scrollTop - $items.find('li').eq(this.selectedIndex)[0].clientHeight * 3)
+    }
   }
   public handleEnter () {
     if (this.t) {
@@ -194,19 +214,27 @@ export default class extends React.Component<MyProps, MyStates> {
       $(results).one('mouseleave', () => {
         this.handleLeave()
       })
-      $(results).children('.items').scroll((e) => {
-        const scrollTop = e.target.scrollTop
-        const h = $(results).find('ul').height()
-        const ch = e.target.clientHeight
-        if (scrollTop + ch > h - 10) {
-          if (this.state.page < Math.ceil(this.state.dataTmp.length / this.pageNum)) {
-            this.setState({
-              page: this.state.page + 1,
-              data: this.state.dataTmp.slice(0, this.pageNum * (this.state.page + 1))
-            })
-          }
+      this.onItemScroll()
+    })
+  }
+  public onItemScroll () {
+    const results = this.refs.results
+    $(results).children('.items').scroll((e) => {
+      const scrollTop = e.target.scrollTop
+      const h = $(results).find('ul').height()
+      const ch = e.target.clientHeight
+      // 显示区域离底部小于10px的时候
+      // console.log(scrollTop + ch - h, h , scrollTop + ch > h - 10)
+      console.log(this.defaultPage, 'defaultPage')
+      if (scrollTop + ch > h - 10) {
+        if (this.defaultPage < Math.ceil(this.state.dataTmp.length / this.pageNum)) {
+          this.defaultPage += 1
+          // console.log(this.defaultPage, 'defaultPage')
+          this.setState({
+            data: this.state.dataTmp.slice(0, this.defaultPage * this.pageNum)
+          })
         }
-      })
+      }
     })
   }
   public handleLeave () {
@@ -219,11 +247,11 @@ export default class extends React.Component<MyProps, MyStates> {
       this.t = setTimeout(() => {
         $(results).removeClass('custom-slide-up-leave')
         $(results).addClass('hidden')
+        this.defaultPage = this.selectedIndex <= 0 ? 1 : Math.ceil(this.selectedIndex / this.pageNum)
         this.setState({
           visible: false,
           selectedIndex: this.selectedIndex
-          // page: 1,
-          // data: this.allData.slice(0, this.pageNum),
+          // data: this.allData.slice(0, this.defaultPage * this.pageNum),
           // dataTmp: this.allData
         })
         this.seleted = false
@@ -238,6 +266,7 @@ export default class extends React.Component<MyProps, MyStates> {
       title: item.title,
       selectedIndex: index
     })
+    this.defaultPage = index === 0 ? 1 : Math.ceil(index / this.pageNum)
     this.handleLeave()
     if (callBack) {
       setTimeout(() => {
@@ -245,18 +274,29 @@ export default class extends React.Component<MyProps, MyStates> {
       }, 301)
     }
   }
-  public handleChange () {
+  public handleChange (e: any) {
+    const $items = $(this.refs.results).find('.items')
+    const filterVal = e.target.value
     const { allData } = this
     const value: string = $(this.refs.input).val().toString()
     const pattern = new RegExp(value, 'i')
-    const res = allData.filter((item: T): boolean => {
+    const res = allData.filter((item: T, index): boolean => {
       if (pattern.test(item.title) || pattern.test(item.capital.join(','))) {
         return true
       }
     })
+    $items.scrollTop(0)
+    res.map((item, index) => {
+      if (this.state.title === item.title) {
+        this.selectedIndex = index
+      }
+    })
+    this.defaultPage = 1
     this.setState({
       data: res.slice(0, this.pageNum),
-      dataTmp: res
+      dataTmp: res,
+      selectedIndex: -1,
+      filterVal
     })
   }
   public onMouseEnter (key: number) {
@@ -270,6 +310,7 @@ export default class extends React.Component<MyProps, MyStates> {
   public render () {
     const { className, style, filter } = this.props
     const { visible, data } = this.state
+    // console.log(data, 'render')
     let { title } = this.state
     title = title || this.allData.length && this.allData[0].title || ''
     return (
@@ -281,7 +322,15 @@ export default class extends React.Component<MyProps, MyStates> {
           </div>
         </div>
         {visible && <div className='results' ref='results'>
-          {filter && <input className='input' onChange={this.handleChange.bind(this)} ref='input'/>}
+          {
+            filter &&
+            <input
+              className='input'
+              value={this.state.filterVal}
+              onChange={this.handleChange.bind(this)}
+              ref='input'
+            />
+          }
           {data.length === 0 && <p>未搜到结果</p>}
           <div className='items'>
             <ul>

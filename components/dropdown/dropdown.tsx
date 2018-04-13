@@ -285,7 +285,13 @@ export default class extends React.Component<MyProps, MyStates> {
     if (this.filterVal === '') {
       return allData
     }
-    const pattern = new RegExp(this.filterVal, 'i')
+    let pattern: RegExp = null
+    try {
+      pattern = new RegExp(this.filterVal, 'i')
+    } catch (e) {
+      console.log(e.message)
+      pattern = new RegExp('', 'i')
+    }
     const res = allData.filter((item: T, index): boolean => {
       if (pattern.test(item.title) || pattern.test(item.capital.join(','))) {
         return true
@@ -298,7 +304,6 @@ export default class extends React.Component<MyProps, MyStates> {
     this.filterVal = e.target.value
     const { allData } = this
     const value: string = $(this.refs.input).val().toString()
-    const pattern = new RegExp(value, 'i')
     const res = this.filterData()
     $items.scrollTop(0)
     res.map((item, index) => {

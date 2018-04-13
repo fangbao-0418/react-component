@@ -155,6 +155,10 @@ export default class extends React.Component<MyProps, MyStates> {
     this.state.dataTmp.map((item, index) => {
       if (this.state.title === item.title) {
         this.selectedIndex = index
+        this.setState({
+          selectedIndex: index
+        })
+        return false
       }
     })
     if (this.selectedIndex < 0) {
@@ -289,6 +293,7 @@ export default class extends React.Component<MyProps, MyStates> {
     res.map((item, index) => {
       if (this.state.title === item.title) {
         this.selectedIndex = index
+        return false
       }
     })
     this.defaultPage = 1

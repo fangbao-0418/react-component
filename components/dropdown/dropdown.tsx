@@ -157,7 +157,9 @@ export default class extends React.Component<MyProps, MyStates> {
     this.state.dataTmp.map((item, index) => {
       if (this.state.title === item.title) {
         this.selectedIndex = index
+        this.defaultPage = this.selectedIndex <= 0 ? 1 : Math.ceil(this.selectedIndex / this.pageNum)
         this.setState({
+          data: this.state.dataTmp.slice(0, this.defaultPage * this.pageNum),
           selectedIndex: index
         })
         return false

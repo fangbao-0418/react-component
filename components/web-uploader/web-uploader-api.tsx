@@ -1,5 +1,5 @@
 import React from 'react'
-import modal from '../modal'
+import Modal from '../modal'
 import bus, { Bus } from './bus'
 import WebUploader from './index'
 export interface Options {
@@ -15,39 +15,39 @@ export interface Options {
   mark?: string
   callback?: {}
 }
+
+let modal: Modal = null
 // events: complete 完成, close 关闭
-function webUploader (opts: Options): Bus {
-  const m = new modal({
-    header: null,
-    footer: null,
-    mask: false,
-    maskClosable: false,
-    className: 'pilipa-web-uploader-modal',
-    style: 'width: auto;',
-    content: (
-      <WebUploader
-        accessKeyId={opts.accessKeyId}
-        accessKeySecret={opts.accessKeySecret}
-        stsToken={opts.stsToken}
-        bucket={opts.bucket}
-        region={opts.region}
-        dir={opts.dir}
-        accept={opts.accept}
-        maxUploadNum={opts.maxUploadNum}
-        uploadTarget={opts.uploadTarget}
-        mark={opts.mark}
-        callBack={opts.callback}
-      />
-    )
-  })
-  m.show()
-  bus.on('close', () => {
-    m.hide()
-  })
-  // bus.on('complete', () => {
-  //   m.hide()
-  // })
-  console.log(m, 'm')
-  return bus
+export default class extends Bus {
+  constructor (opts: Options) {
+    super()
+    modal = new Modal({
+      header: null,
+      footer: null,
+      mask: false,
+      maskClosable: false,
+      className: 'pilipa-web-uploader-modal',
+      style: 'width: auto;',
+      content: (
+        <WebUploader
+          accessKeyId={opts.accessKeyId}
+          accessKeySecret={opts.accessKeySecret}
+          stsToken={opts.stsToken}
+          bucket={opts.bucket}
+          region={opts.region}
+          dir={opts.dir}
+          accept={opts.accept}
+          maxUploadNum={opts.maxUploadNum}
+          uploadTarget={opts.uploadTarget}
+          mark={opts.mark}
+          callBack={opts.callback}
+        />
+      )
+    })
+    modal.show()
+  }
+  public destroy () {
+    bus.off()
+    modal.hide()
+  }
 }
-export default webUploader

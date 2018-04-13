@@ -1,13 +1,13 @@
 import React from 'react'
 import { webUploader } from '../components'
 /* tslint:disable:max-line-length quotemark */
-let ossCfg: any = JSON.parse("{\"status\":true,\"errorcode\":\"\",\"message\":\"\",\"data\":\"{\\\"AccessKeyId\\\":\\\"STS.G3NffnTHFSFW52bTfiwWF4AUo\\\",\\\"AccessKeySecret\\\":\\\"C76eQ9jBEkd14Ujq99h7feyCWGpgWPGyYjTUADbo33ef\\\",\\\"SecurityToken\\\":\\\"CAISiwJ1q6Ft5B2yfSjIpvD7LdzauZdn5IS8NxTTsGY8e9hq24T+jTz2IHlNfHVsBeEbtPQznWFZ7\/gflr90UIQAXU3AbNN5q5pK9QfkaoHKtteutV7gVRhmXTr9MQXy+eOPScebJYqvV5XAQlTAkTAJstmeXD6+XlujHISUgJp8FLo+VRW5ajw0b7U\/ZHEVyqkgOGDWKOymPzPzn2PUFzAIgAdnjn5l4qnNqa\/1qDim1Qanlb5O+d2ufcP7NZAwY60SCYnlgLZEEYPayzNV5hRw86N7sbdJ4z+vvKvGWgAJv0naYreOooE2fV4gOPUgZalft73klPl5ouWWmZnzz1NENupYSD\/P318jEzFNxIkagAFO\/3gMDLMDsCntQMS0zoXAEpwdXNh4q\/JFm8BEBP0Tt4DwepzfNq8bjmeR+Y0GBh3RypeouhyOpTLMgjxlRZOUs37lIsgimOz245i47CK25gDY+iBnh6l1+pZAiiAw1KvaUOGEH9eV2MJoAhCg5bswy7lGV0h0uzIqXFF944vrIg==\\\",\\\"bucketName\\\":\\\"pilipa\\\",\\\"dir\\\":\\\"pilipa\/375\/7333\/2018-03-31\\\",\\\"regionId\\\":\\\"cn-beijing\\\"}\"}")
+let ossCfg: any = JSON.parse("{\"status\":true,\"errorcode\":\"\",\"message\":\"\",\"data\":\"{\\\"AccessKeyId\\\":\\\"STS.H5kzrK5Nt3DZ3uQqDnR8V31Rx\\\",\\\"AccessKeySecret\\\":\\\"DUxsbkBT6DmkhthzbvZiN4RbXozdSbA5T1fgmwxW656c\\\",\\\"SecurityToken\\\":\\\"CAISiwJ1q6Ft5B2yfSjIqfbeMcj\/2JFVhIaxMVPglUQ7Xrd63PT5mjz2IHlNfHVsBeEbtPQznWFZ7\/gflr90UIQAXU3AbNN5q5pK9QfkaoHKtteutTiuZwFmXTr9MQXy+eOPScebJYqvV5XAQlTAkTAJstmeXD6+XlujHISUgJp8FLo+VRW5ajw0b7U\/ZHEVyqkgOGDWKOymPzPzn2PUFzAIgAdnjn5l4qnNqa\/1qDim1Qanlb5O+d2ufcP7NZAwY60SCYnlgLZEEYPayzNV5hRw86N7sbdJ4z+vvKvGWgAJv0naYreOooE2fV4gOPUgZalft73klPl5ouWWmZnzz1NENupYSD\/P318jEzFNxIkagAFq+\/nGHlR\/rnWjBHncCqIMYETyVm5nJhNaL\/9GMadE7bq0wJ8cWQ+x1N1TOY6B3GjjohI7mSEb+kLQ4Bd4OFo4w+s+AYCUMdGrNi80JcgflqSdZMIjoHMD+haFhvxuhGYlIAicNuEa8VCq6yO6z2qWuclIdy2TMDSyEL6s6bZHkw==\\\",\\\"bucketName\\\":\\\"pilipa\\\",\\\"dir\\\":\\\"pilipa\/375\/7333\/2018-03-31\\\",\\\"regionId\\\":\\\"cn-beijing\\\"}\"}")
 ossCfg = JSON.parse(ossCfg.data)
 let newOssCfg = JSON.parse("{\"status\":true,\"errorcode\":\"\",\"message\":\"\",\"data\":\"{\\\"AccessKeyId\\\":\\\"STS.KEWh2rrjqR9MyZzJJddoQnTyw\\\",\\\"AccessKeySecret\\\":\\\"77qFXr4MpW6tRfzWr4Sejw2kiHT9HVKT6rdf67QK1jr3\\\",\\\"SecurityToken\\\":\\\"CAISiwJ1q6Ft5B2yfSjIqobiI4jGn7VQ5fume3zLrkoxaOB9gZHSlTz2IHlNfHVsBeEbtPQznWFZ7\/gflr90UIQAXU3AbNN5q5pK9QfkaoHKtteutXnSFhhmXTr9MQXy+eOPScebJYqvV5XAQlTAkTAJstmeXD6+XlujHISUgJp8FLo+VRW5ajw0b7U\/ZHEVyqkgOGDWKOymPzPzn2PUFzAIgAdnjn5l4qnNqa\/1qDim1Qanlb5O+d2ufcP7NZAwY60SCYnlgLZEEYPayzNV5hRw86N7sbdJ4z+vvKvGWgAJv0naYreOooE2fV4gOPUgZalft73klPl5ouWWmZnzz1NENupYSD\/P318jEzFNxIkagAE3mkaYOvo5UAsA2Ra\/7mQ\/GaShROMuoec4+PGFz1XCEeZQFR\/usDuKjCQoeppZ1ZOTfIAZvFCKLNLl873RyHekaRpyoCXQ73aFojexfwgnT7RXXNgIyRNpoUTkZHuoL6LMaJzBN4rmwU62KUZ0KhJ93GjnBhFuSAVY8uD7DOK\/mg==\\\",\\\"bucketName\\\":\\\"pilipa\\\",\\\"dir\\\":\\\"pilipa\/375\/7333\/2018-03-31\\\",\\\"regionId\\\":\\\"cn-beijing\\\"}\"}")
 newOssCfg = JSON.parse(newOssCfg.data)
 export default class extends React.Component {
   public componentDidMount () {
-    const uploader = webUploader({
+    const uploader = new webUploader({
       accessKeyId: ossCfg.AccessKeyId,
       accessKeySecret: ossCfg.AccessKeySecret,
       stsToken: ossCfg.SecurityToken,
@@ -48,7 +48,7 @@ export default class extends React.Component {
       console.log(urls, '上传成功')
     })
     uploader.on('close', (urls) => {
-      console.log(urls, '上传成功')
+      uploader.destroy()
     })
   }
   public render () {

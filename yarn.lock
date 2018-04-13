@@ -138,9 +138,9 @@ ajv@^6.1.0:
     json-schema-traverse "^0.3.0"
     uri-js "^3.0.2"
 
-ali-oss@5.0.0:
-  version "5.0.0"
-  resolved "http://registry.npm.taobao.org/ali-oss/download/ali-oss-5.0.0.tgz#80f42ff18457ca18119036fb6cc25c50450acea6"
+ali-oss@5.0.1:
+  version "5.0.1"
+  resolved "http://registry.npm.taobao.org/ali-oss/download/ali-oss-5.0.1.tgz#7fea31bb740a1227ffbccbf774d52991b94f0fef"
   dependencies:
     address "^1.0.0"
     agentkeepalive "^2.1.1"

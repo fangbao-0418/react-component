@@ -22,14 +22,18 @@ export interface MyStates {
     page: number;
     visible: boolean;
     hover: boolean;
+    selectedIndex: number;
 }
 declare class AutoComplete extends React.Component<MyProps, MyStates> {
     pageNum: number;
     allData: T[];
     defaultCls: string;
+    event: any;
     constructor(props: MyProps);
     componentWillReceiveProps(props: MyProps): void;
     componentDidMount(): void;
+    onKeyDown(event?: any): void;
+    onKeyUp(): void;
     handleAllData(data: any[]): void;
     searchChange(): void;
     searchShow(): void;

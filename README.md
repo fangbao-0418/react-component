@@ -9,7 +9,7 @@ yarn add pilipa --registry http://npmregistry.i-counting.cn
 # Development
 ```
 yarn install
-yarn add ali-oss@5.0.0 font-awesome@4.7.0 jquery@3.3.1 react@16.3.1 react-dom@16.3.1 viewerjs@1.0.0 -P
+yarn add ali-oss@5.0.1 font-awesome@4.7.0 jquery@3.3.1 react@16.3.1 react-dom@16.3.1 viewerjs@1.0.0 -P
 npm run dev
 ...
 npm run lib
@@ -45,4 +45,7 @@ define(['jquery', 'react', 'react-dom', 'viewerjs', 'ali-oss'], ($, React, React
 ### 1.1.4-alpha.1
   &nbsp;&nbsp; `2018-4-12`
   - dropdown 修复没有数据报错
+### 1.1.4-alpha.9
+  &nbsp;&nbsp; `2018-4-12`
+  - autocomplete 支持上下键选择，回车确定选择
 

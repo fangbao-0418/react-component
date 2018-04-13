@@ -210,6 +210,10 @@ export default class extends React.Component <Props, States> {
       uploadStatus: 'success',
       uploading: false
     })
+    bus.trigger<{index: number, percentage: number}>('percentage', {
+      index: this.props.index,
+      percentage: 1
+    })
     bus.trigger('end-upload', {
       index: this.props.index,
       status: 'success',

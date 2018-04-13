@@ -21,12 +21,14 @@ export interface MyStates {
   page: number
   visible: boolean
   hover: boolean
+  selectedIndex: number
 }
 
 class AutoComplete extends React.Component<MyProps, MyStates> {
   public pageNum = 20
   public allData: T[] = []
   public defaultCls = 'pilipa-auto-complete'
+  public event: any
   constructor (props: MyProps) {
     super(props)
     this.handleAllData(this.props.data)
@@ -35,7 +37,8 @@ class AutoComplete extends React.Component<MyProps, MyStates> {
       dataTmp: this.allData,
       page: 1,
       visible: false,
-      hover: false
+      hover: false,
+      selectedIndex: -1
     }
   }
   public componentWillReceiveProps (props: MyProps) {
@@ -52,6 +55,62 @@ class AutoComplete extends React.Component<MyProps, MyStates> {
     $(this.refs.input).click(() => {
       this.searchShow()
     })
+    $(document).keydown((event) => {
+      this.onKeyDown(event)
+    })
+    $(document).keyup(() => {
+      if (this.event) {
+        this.event.returnValue = false
+      }
+    })
+  }
+  public onKeyDown (event?: any) {
+    this.event = event
+    const $results = $(this.refs.results)
+    const $items = $results.find('.items')
+    const $lis = $results.find('.items li')
+    const keyCode = event.keyCode
+    const { dataTmp } = this.state
+    let { selectedIndex } = this.state
+    let liOffsetTop = 0
+    const scrollTop = $items.scrollTop()
+    const itemsHeight = $items.height()
+    if ($lis.length === 0) {
+      return
+    }
+    switch (keyCode) {
+    // 回车
+    case 13:
+      $lis.eq(this.state.selectedIndex).trigger('click')
+      break
+    // ↑
+    case 38:
+      event.preventDefault()
+      selectedIndex = selectedIndex <= 0 ? 0 : selectedIndex - 1
+      liOffsetTop = $lis.eq(selectedIndex)[0].offsetTop
+      if (scrollTop > liOffsetTop) {
+        $items.scrollTop(liOffsetTop)
+      }
+      this.setState({
+        selectedIndex
+      })
+      break
+    // ↓
+    case 40:
+      event.preventDefault()
+      selectedIndex = selectedIndex >= dataTmp.length - 1 ? dataTmp.length - 1 : selectedIndex + 1
+      liOffsetTop = $lis.eq(selectedIndex)[0].offsetTop
+      if (scrollTop + itemsHeight - $lis.eq(selectedIndex).height() < liOffsetTop) {
+        $items.scrollTop(scrollTop + $lis.eq(selectedIndex)[0].clientHeight)
+      }
+      this.setState({
+        selectedIndex
+      })
+      break
+    }
+  }
+  public onKeyUp () {
+
   }
   public handleAllData (data: any[]) {
     const { key, title } = this.props.setFields || {key: '', title: ''}
@@ -171,6 +230,14 @@ class AutoComplete extends React.Component<MyProps, MyStates> {
                         onClick={this.handleSelect.bind(this, item)}
                         key={'auto-complete-' + index}
                         title={item.title}
+                        className={classNames({
+                          active: this.state.selectedIndex === index
+                        })}
+                        onMouseEnter={() => {
+                          this.setState({
+                            selectedIndex: index
+                          })
+                        }}
                       >
                         {item.title}
                       </li>

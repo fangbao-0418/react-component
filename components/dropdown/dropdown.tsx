@@ -86,31 +86,29 @@ export default class extends React.Component<MyProps, MyStates> {
     console.log('will unmount')
   }
   public onKeyDown (event: any) {
+    this.event = event
     const $dropdowm = $(this.refs.dropdown)
     const keyCode = event.keyCode
     let { selectedIndex } = this.state
     const $items = $dropdowm.find('.results .items')
-    if ($items.length === 0 || $items.find('li').length === 0) {
+    const $lis = $items.find('li')
+    const { dataTmp } = this.state
+    if ($lis.length === 0) {
       return
     }
     const scrollTop = $items.scrollTop()
     const itemsHeight = $items.height()
     let liOffsetTop = 0
-    if ($items.length === 0) {
-      return
-    }
     switch (keyCode) {
     // 回车
     case 13:
-      console.log(this.state.selectedIndex, '13')
-      $items.find('li').eq(this.state.selectedIndex).trigger('click')
+      $lis.eq(this.state.selectedIndex).trigger('click')
       break
     // ↑
     case 38:
-      this.event = event
       event.preventDefault()
       selectedIndex = selectedIndex <= 0 ? 0 : selectedIndex - 1
-      liOffsetTop = $items.find('li').eq(selectedIndex)[0].offsetTop
+      liOffsetTop = $lis.eq(selectedIndex)[0].offsetTop
       if (scrollTop > liOffsetTop) {
         $items.scrollTop(liOffsetTop)
       }
@@ -120,12 +118,11 @@ export default class extends React.Component<MyProps, MyStates> {
       break
     // ↓
     case 40:
-      this.event = event
       event.preventDefault()
-      selectedIndex = selectedIndex >= this.allData.length - 1 ? this.allData.length - 1 : selectedIndex + 1
-      liOffsetTop = $items.find('li').eq(selectedIndex)[0].offsetTop
-      if (scrollTop + itemsHeight - $items.find('li').eq(selectedIndex).height() < liOffsetTop) {
-        $items.scrollTop(scrollTop + $items.find('li').eq(selectedIndex)[0].clientHeight)
+      selectedIndex = selectedIndex >= dataTmp.length - 1 ? dataTmp.length - 1 : selectedIndex + 1
+      liOffsetTop = $lis.eq(selectedIndex)[0].offsetTop
+      if (scrollTop + itemsHeight - $lis.eq(selectedIndex).height() < liOffsetTop) {
+        $items.scrollTop(scrollTop + $lis.eq(selectedIndex)[0].clientHeight)
       }
       this.setState({
         selectedIndex

@@ -1,6 +1,6 @@
 export default function () {
   return (target: any) => {
-    const events: any[] = []
+    let events: any[] = []
     console.log(this, 'this')
     function trigger (...args: any[]) {
       events.map((item) => {
@@ -17,12 +17,15 @@ export default function () {
       })
       return target.prototype
     }
-    function off (name: string) {
+    function off (name?: string) {
       events.map((item, index) => {
         if (item.name === name) {
           events.splice(index, 1)
         }
       })
+      if (!name) {
+        events = []
+      }
       return target.prototype
     }
     target.prototype.trigger = trigger
